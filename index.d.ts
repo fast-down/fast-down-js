@@ -5,10 +5,10 @@ export declare class CancellationToken {
   cancel(): void
   isCancelled(): boolean
 }
-export type JsCancellationToken = CancellationToken
 
 export declare class DownloadTask {
   cancel(): void
+  get info(): UrlInfo
   /**
    * 开始下载任务
    * @param `save_path` 存储路径
@@ -16,60 +16,76 @@ export declare class DownloadTask {
    */
   start(savePath: string, callback: (event: Event) => void): Promise<void>
 }
-export type JsDownloadTask = DownloadTask
+
+export declare class UrlInfo {
+  size: number
+  /**
+   * 服务器返回的原始文件名，必须清洗掉不合法字符才能安全使用
+   *
+   * 使用 `UrlInfo.filename()` 可用直接获取安全的文件名
+   */
+  rawName: string
+  supportsRange: boolean
+  fastDownload: boolean
+  finalUrl: string
+  etag?: string
+  lastModified?: string
+  /** 返回清洗后的安全文件名 */
+  filename(): string
+}
 
 export interface Config {
-  /** 线程数量，推荐值 `32` / `16` / `8`。线程越多不意味着越快 */
+  /** 线程数量，默认值 `32`。线程越多不意味着越快 */
   threads?: number
   /**
-   * 设置代理，支持 https、http、socks5 代理
+   * 设置代理，默认值 `system`。支持 https、http、socks5 代理
    *
-   * - `""` | `"no"` => `Proxy::No`
-   * - `null` | `"system"` => `Proxy::System`
+   * - `"no"` => `Proxy::No`
+   * - `"system"` => `Proxy::System`
    * - `proxy_str` => `Proxy::Custom(proxy_str)`
    */
-  proxy?: string
+  proxy?: 'no' | 'system' | (string & {})
   /** 自定义请求头 */
   headers?: Record<string, string>
   /**
-   * 最小分块大小，单位为字节，推荐值 `8 * 1024 * 1024`
+   * 最小分块大小，单位为字节，默认值 `8 * 1024 * 1024`
    *
    * - 分块太小容易造成强烈竞争
    * - 当无法分块的时候会进入冗余竞争模式
    */
   minChunkSize?: number
   /**
-   * 写入缓冲区大小，单位为字节，推荐值 `16 * 1024 * 1024`
+   * 写入缓冲区大小，单位为字节，默认值 `16 * 1024 * 1024`
    *
    * - 只对 [`WriteMethod::Std`] 写入方法有效，有利于将随机写入转换为顺序写入，提高写入速度
    * - 对于 [`WriteMethod::Mmap`] 写入方法无效，因为写入缓冲区由系统决定
    */
   writeBufferSize?: number
   /**
-   * 写入队列容量，推荐值 `10240`
+   * 写入队列容量，默认值 `10240`
    *
    * 如果下载线程太快，填满了写入队列，会触发压背，降低下载速度，防止内存占用过大
    */
   writeQueueCap?: number
   /**
-   * 请求失败后的默认重试间隔，推荐值 `500ms`
+   * 请求失败后的默认重试间隔，默认值 `500ms`
    *
    * 如果服务器返回中有 `Retry-After` 头，则遵循服务器返回的设定
    */
   retryGapMs?: number
   /**
-   * 拉取超时时间，推荐值 `5000ms`
+   * 拉取超时时间，默认值 `5000ms`
    *
    * 请求发出后，接收字节中，如果在 `pull_timeout` 这一段时间内一个字节也没收到，则中断连接，重新请求。
    * 有利于触发 TCP 重新检测拥塞状态，提高下载速度
    */
   pullTimeoutMs?: number
-  /** 是否接受无效证书（危险），推荐值 `false` */
+  /** 是否接受无效证书（危险），默认值 `false` */
   acceptInvalidCerts?: boolean
-  /** 是否接受无效主机名（危险），推荐值 `false` */
+  /** 是否接受无效主机名（危险），默认值 `false` */
   acceptInvalidHostnames?: boolean
   /**
-   * 写入磁盘方式，推荐值 [`WriteMethod::Mmap`]
+   * 写入磁盘方式，默认值 [`WriteMethod::Mmap`]
    *
    * - [`WriteMethod::Mmap`] 写入方式速度最快，将写入交给操作系统执行，但是：
    *     1. 在 32 位系统上最大只能映射 4GB 的文件，所以在 32 位系统上，会自动回退到 [`WriteMethod::Std`]
@@ -78,35 +94,35 @@ export interface Config {
    * - [`WriteMethod::Std`] 写入方式兼容性最好，会在 `write_buffer_size` 内对片段进行排序，尽量转换为顺序写入
    */
   writeMethod?: WriteMethod
-  /** 设置获取元数据的重试次数，推荐值 `10`。注意，这不是下载中的重试次数 */
+  /** 设置获取元数据的重试次数，默认值 `10`。注意，这不是下载中的重试次数 */
   retryTimes?: number
   /**
-   * 使用哪些地址来发送请求，推荐值 `Vec::new()`
+   * 使用哪些地址来发送请求，默认值 `Vec::new()`
    *
    * 如果你有多个网卡可用，可以填写他们的对外 IP 地址，请求会在这些 IP 地址上轮换，下载不一定会更快
    */
   localAddress?: Array<string>
   /**
-   * 冗余线程数，推荐值 `3`
+   * 冗余线程数，默认值 `3`
    *
    * 当块大小小于 `min_chunk_size` 后无法分块，进入冗余竞争模式。
    * 最多有 `max_speculative` 个线程在同一分块上竞争下载，以解决下载卡进度 99% 的问题
    */
   maxSpeculative?: number
   /** 已经下载过的部分，如果你想下载整个文件，就传 `Vec::new()` */
-  downloadedChunk?: Array<JsRange>
+  downloadedChunk?: Array<Range>
   /**
-   * 已下载分块的平滑窗口，单位为字节，推荐值 `8 * 1024`
+   * 已下载分块的平滑窗口，单位为字节，默认值 `8 * 1024`
    *
    * 它会过滤掉 `downloaded_chunk` 中小于 `chunk_window` 的小空洞，以减小 HTTP 请求数量
    */
   chunkWindow?: number
 }
 
-export interface JsEvent {
-  /** 事件类型：`PrefetchError` | `Pulling` | `PullError` | `PullTimeout` | `PullProgress` | `PushError` | `PushProgress` | `FlushError` | `Finished` */
-  type: string
-  /** 关联的任务/线程 ID */
+export interface Event {
+  /** 事件类型 */
+  type: 'PrefetchError' | 'Pulling' | 'PullError' | 'PullTimeout' | 'PullProgress' | 'PushError' | 'PushProgress' | 'FlushError' | 'Finished'
+  /** 关联的线程 ID */
   id?: number
   /** 错误消息或描述 */
   message?: string
@@ -120,16 +136,6 @@ export declare function prefetch(url: string, config?: Config | undefined | null
 export interface Range {
   start: number
   end: number
-}
-
-export interface UrlInfo {
-  size: number
-  rawName: string
-  supportsRange: boolean
-  fastDownload: boolean
-  finalUrl: string
-  etag?: string
-  lastModified?: string
 }
 
 export declare const enum WriteMethod {

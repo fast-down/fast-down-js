@@ -11,6 +11,7 @@ crate-type = ["cdylib"]
 [dependencies]
 napi-derive = "3.0.0"
 parking_lot = "0.12.5"
+sanitize-filename = "0.6.0"
 thiserror = "2.0.18"
 tokio-util = "0.7.18"
 url = "2.5.8"

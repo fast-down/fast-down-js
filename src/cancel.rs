@@ -1,18 +1,17 @@
 use napi_derive::napi;
-use tokio_util::sync::CancellationToken;
 
-#[napi(js_name = "CancellationToken")]
 #[derive(Debug, Default, Clone)]
-pub struct JsCancellationToken {
-  token: CancellationToken,
+#[napi]
+pub struct CancellationToken {
+  token: tokio_util::sync::CancellationToken,
 }
 
 #[napi]
-impl JsCancellationToken {
+impl CancellationToken {
   #[napi(factory)]
   #[must_use]
   pub fn new() -> Self {
-    let token = CancellationToken::new();
+    let token = tokio_util::sync::CancellationToken::new();
     Self { token }
   }
 
@@ -28,7 +27,7 @@ impl JsCancellationToken {
   }
 
   #[must_use]
-  pub fn get_token(&self) -> CancellationToken {
+  pub fn get_token(&self) -> tokio_util::sync::CancellationToken {
     self.token.clone()
   }
 }

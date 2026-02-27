@@ -57,9 +57,7 @@ const {
 })
 export default __napiModule.exports
 export const CancellationToken = __napiModule.exports.CancellationToken
-export const JsCancellationToken = __napiModule.exports.JsCancellationToken
 export const DownloadTask = __napiModule.exports.DownloadTask
-export const JsDownloadTask = __napiModule.exports.JsDownloadTask
+export const UrlInfo = __napiModule.exports.UrlInfo
 export const prefetch = __napiModule.exports.prefetch
 export const WriteMethod = __napiModule.exports.WriteMethod
-export const JsWriteMethod = __napiModule.exports.JsWriteMethod

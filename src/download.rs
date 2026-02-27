@@ -1,5 +1,5 @@
-use crate::{ForceSendExt, JsEvent, ToNapiError};
-use fast_down_ffi::{DownloadTask, Rx};
+use crate::{Event, ForceSendExt, ToNapiError, UrlInfo};
+use fast_down_ffi::Rx;
 use napi::{
   Status,
   threadsafe_function::{ThreadsafeFunction, ThreadsafeFunctionCallMode},
@@ -9,24 +9,31 @@ use parking_lot::Mutex;
 use std::path::PathBuf;
 use tokio_util::sync::CancellationToken;
 
-#[napi(js_name = "DownloadTask")]
-pub struct JsDownloadTask {
-  inner: Mutex<Option<(DownloadTask, Rx)>>,
+#[napi]
+pub struct DownloadTask {
+  info: UrlInfo,
+  inner: Mutex<Option<(fast_down_ffi::DownloadTask, Rx)>>,
   token: CancellationToken,
 }
 
-pub type JsDownloadCallback = ThreadsafeFunction<JsEvent, (), JsEvent, Status, false>;
+pub type DownloadCallback = ThreadsafeFunction<Event, (), Event, Status, false>;
 
 #[napi]
-impl JsDownloadTask {
-  pub const fn new(task: DownloadTask, rx: Rx, token: CancellationToken) -> Self {
+impl DownloadTask {
+  pub fn new(task: fast_down_ffi::DownloadTask, rx: Rx, token: CancellationToken) -> Self {
+    let info = (&task.info).into();
     let inner = Mutex::new(Some((task, rx)));
-    Self { inner, token }
+    Self { info, inner, token }
   }
 
   #[napi]
   pub fn cancel(&self) {
     self.token.cancel();
+  }
+
+  #[napi(getter)]
+  pub fn info(&self) -> UrlInfo {
+    self.info.clone()
   }
 
   /// 开始下载任务
@@ -36,7 +43,7 @@ impl JsDownloadTask {
   pub async fn start(
     &self,
     save_path: String,
-    #[napi(ts_arg_type = "(event: Event) => void")] callback: JsDownloadCallback,
+    #[napi(ts_arg_type = "(event: Event) => void")] callback: DownloadCallback,
   ) -> napi::Result<()> {
     let (task, rx) = self
       .inner
@@ -52,11 +59,11 @@ impl JsDownloadTask {
 }
 
 async fn download_inner(
-  task: DownloadTask,
+  task: fast_down_ffi::DownloadTask,
   rx: Rx,
   save_path: PathBuf,
   token: CancellationToken,
-  callback: JsDownloadCallback,
+  callback: DownloadCallback,
 ) -> napi::Result<()> {
   let download_fut = task.start(save_path, token.clone());
   tokio::pin!(download_fut);
@@ -67,7 +74,7 @@ async fn download_inner(
         match event {
           Ok(e) => {
             callback.call(
-              JsEvent::from(e),
+              Event::from(e),
               ThreadsafeFunctionCallMode::NonBlocking,
             );
           }

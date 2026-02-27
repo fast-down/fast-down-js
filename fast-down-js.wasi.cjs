@@ -39,7 +39,7 @@ if (__nodeFs.existsSync(__wasmDebugFilePath)) {
   __wasmFilePath = __wasmDebugFilePath
 } else if (!__nodeFs.existsSync(__wasmFilePath)) {
   try {
-    __wasmFilePath = require.resolve('@fast-down/fast-down-wasm32-wasi/fast-down-js.wasm32-wasi.wasm')
+    __wasmFilePath = __nodePath.resolve('@fast-down/fast-down-wasm32-wasi')
   } catch {
     throw new Error('Cannot find fast-down-js.wasm32-wasi.wasm file, and @fast-down/fast-down-wasm32-wasi package is not installed.')
   }
@@ -109,9 +109,7 @@ const { instance: __napiInstance, module: __wasiModule, napiModule: __napiModule
 })
 module.exports = __napiModule.exports
 module.exports.CancellationToken = __napiModule.exports.CancellationToken
-module.exports.JsCancellationToken = __napiModule.exports.JsCancellationToken
 module.exports.DownloadTask = __napiModule.exports.DownloadTask
-module.exports.JsDownloadTask = __napiModule.exports.JsDownloadTask
+module.exports.UrlInfo = __napiModule.exports.UrlInfo
 module.exports.prefetch = __napiModule.exports.prefetch
 module.exports.WriteMethod = __napiModule.exports.WriteMethod
-module.exports.JsWriteMethod = __napiModule.exports.JsWriteMethod
