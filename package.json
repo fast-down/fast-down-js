@@ -23,7 +23,7 @@
     "browser.js"
   ],
   "napi": {
-    "binaryName": "fast-down",
+    "binaryName": "fast-down-js",
     "targets": [
       "x86_64-pc-windows-msvc",
       "x86_64-apple-darwin",

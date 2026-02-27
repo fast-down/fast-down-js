@@ -2,17 +2,23 @@
 
 use napi_derive::napi;
 
+mod cancel;
 mod config;
 mod download;
 mod error;
 mod event;
+mod force_send;
+mod prefetch;
+pub use cancel::*;
 pub use config::*;
 pub use download::*;
 pub use error::*;
 pub use event::*;
+pub use force_send::*;
+pub use prefetch::*;
 
-#[napi(object)]
-pub struct UrlInfo {
+#[napi(object, js_name = "UrlInfo")]
+pub struct JsUrlInfo {
   pub size: i64,
   pub raw_name: String,
   pub supports_range: bool,

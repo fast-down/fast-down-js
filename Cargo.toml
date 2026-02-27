@@ -2,7 +2,7 @@
 [package]
 authors = ["share121 <me@s121.top>"]
 edition = "2024"
-name = "fast_down"
+name = "fast_down_js"
 version = "0.1.0"
 
 [lib]
@@ -11,7 +11,6 @@ crate-type = ["cdylib"]
 [dependencies]
 napi-derive = "3.0.0"
 parking_lot = "0.12.5"
-serde_json = "1.0.149"
 thiserror = "2.0.18"
 tokio-util = "0.7.18"
 url = "2.5.8"
@@ -21,11 +20,7 @@ path = "../ffi/"
 
 [dependencies.napi]
 version = "3.0.0"
-features = ["serde-json","tokio_rt"]
-
-[dependencies.serde]
-version = "1.0.228"
-features = ["derive"]
+features = ["tokio_rt"]
 
 [dependencies.tokio]
 version = "1.49.0"

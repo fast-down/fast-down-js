@@ -1,53 +1,90 @@
+use fast_down_ffi::Event;
 use napi_derive::napi;
-use serde::{Deserialize, Serialize};
+use std::ops::Range;
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
-#[serde(tag = "type", content = "data")]
-pub enum Event {
-  PrefetchError(String),
-  Pulling(u32),
-  PullError(u32, String),
-  PullTimeout(u32),
-  PullProgress(u32, Range),
-  PushError(u32, String),
-  PushProgress(u32, Range),
-  FlushError(String),
-  Finished(u32),
-}
-
-impl From<fast_down_ffi::Event> for Event {
-  #[allow(clippy::cast_possible_truncation)]
-  fn from(value: fast_down_ffi::Event) -> Self {
-    match value {
-      fast_down_ffi::Event::PrefetchError(e) => Self::PrefetchError(e),
-      fast_down_ffi::Event::Pulling(id) => Self::Pulling(id as u32),
-      fast_down_ffi::Event::PullError(id, e) => Self::PullError(id as u32, e),
-      fast_down_ffi::Event::PullTimeout(id) => Self::PullTimeout(id as u32),
-      fast_down_ffi::Event::PullProgress(id, range) => Self::PullProgress(id as u32, range.into()),
-      fast_down_ffi::Event::PushError(id, e) => Self::PushError(id as u32, e),
-      fast_down_ffi::Event::PushProgress(id, range) => Self::PushProgress(id as u32, range.into()),
-      fast_down_ffi::Event::FlushError(e) => Self::FlushError(e),
-      fast_down_ffi::Event::Finished(id) => Self::Finished(id as u32),
-    }
-  }
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-#[napi(object)]
+#[derive(Debug, Clone)]
+#[napi(object, js_name = "Range")]
 /// 左闭右开
-pub struct Range {
-  /// 包括 start
+pub struct JsRange {
   pub start: i64,
-  /// 不包括 end
   pub end: i64,
 }
 
-impl From<core::ops::Range<u64>> for Range {
+impl From<Range<u64>> for JsRange {
   #[allow(clippy::cast_possible_wrap)]
-  fn from(r: core::ops::Range<u64>) -> Self {
+  fn from(r: Range<u64>) -> Self {
     Self {
       start: r.start as i64,
       end: r.end as i64,
     }
+  }
+}
+
+#[derive(Debug, Clone)]
+#[napi(object)]
+pub struct JsEvent {
+  /// 事件类型：`PrefetchError` | `Pulling` | `PullError` | `PullTimeout` | `PullProgress` | `PushError` | `PushProgress` | `FlushError` | `Finished`
+  #[napi(js_name = "type")]
+  pub event_type: String,
+  /// 关联的任务/线程 ID
+  pub id: Option<u32>,
+  /// 错误消息或描述
+  pub message: Option<String>,
+  /// 进度范围数据
+  pub range: Option<JsRange>,
+}
+
+impl From<Event> for JsEvent {
+  #[allow(clippy::cast_possible_truncation)]
+  fn from(value: Event) -> Self {
+    let mut event = Self {
+      event_type: String::with_capacity(20),
+      id: None,
+      message: None,
+      range: None,
+    };
+    match value {
+      Event::PrefetchError(e) => {
+        event.event_type.push_str("PrefetchError");
+        event.message = Some(e);
+      }
+      Event::Pulling(id) => {
+        event.event_type.push_str("Pulling");
+        event.id = Some(id as u32);
+      }
+      Event::PullError(id, e) => {
+        event.event_type.push_str("PullError");
+        event.id = Some(id as u32);
+        event.message = Some(e);
+      }
+      Event::PullTimeout(id) => {
+        event.event_type.push_str("PullTimeout");
+        event.id = Some(id as u32);
+      }
+      Event::PullProgress(id, range) => {
+        event.event_type.push_str("PullProgress");
+        event.id = Some(id as u32);
+        event.range = Some(range.into());
+      }
+      Event::PushError(id, e) => {
+        event.event_type.push_str("PushError");
+        event.id = Some(id as u32);
+        event.message = Some(e);
+      }
+      Event::PushProgress(id, range) => {
+        event.event_type.push_str("PushProgress");
+        event.id = Some(id as u32);
+        event.range = Some(range.into());
+      }
+      Event::FlushError(e) => {
+        event.event_type.push_str("FlushError");
+        event.message = Some(e);
+      }
+      Event::Finished(id) => {
+        event.event_type.push_str("Finished");
+        event.id = Some(id as u32);
+      }
+    }
+    event
   }
 }

@@ -11,7 +11,7 @@ const __wasi = new __WASI({
   version: 'preview1',
 })
 
-const __wasmUrl = new URL('./fast-down.wasm32-wasi.wasm', import.meta.url).href
+const __wasmUrl = new URL('./fast-down-js.wasm32-wasi.wasm', import.meta.url).href
 const __emnapiContext = __emnapiGetDefaultContext()
 
 
@@ -56,5 +56,10 @@ const {
   },
 })
 export default __napiModule.exports
+export const CancellationToken = __napiModule.exports.CancellationToken
+export const JsCancellationToken = __napiModule.exports.JsCancellationToken
 export const DownloadTask = __napiModule.exports.DownloadTask
+export const JsDownloadTask = __napiModule.exports.JsDownloadTask
+export const prefetch = __napiModule.exports.prefetch
 export const WriteMethod = __napiModule.exports.WriteMethod
+export const JsWriteMethod = __napiModule.exports.JsWriteMethod

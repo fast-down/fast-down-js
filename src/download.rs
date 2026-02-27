@@ -1,139 +1,80 @@
-use crate::{Config, Event, ToNapiError};
-use fast_down_ffi::{Rx, create_channel};
+use crate::{ForceSendExt, JsEvent, ToNapiError};
+use fast_down_ffi::{DownloadTask, Rx};
 use napi::{
-  Env, Task,
-  bindgen_prelude::{AbortSignal, AsyncTask},
+  Status,
   threadsafe_function::{ThreadsafeFunction, ThreadsafeFunctionCallMode},
 };
 use napi_derive::napi;
 use parking_lot::Mutex;
 use std::path::PathBuf;
 use tokio_util::sync::CancellationToken;
-use url::Url;
 
-#[napi(js_name = "prefetch")]
-pub fn js_prefetch(
-  url: String,
-  config: Config,
-  signal: Option<AbortSignal>,
-) -> AsyncTask<AsyncPerfetch> {
-  let token = CancellationToken::new();
-  if let Some(signal) = &signal {
-    let token = token.clone();
-    signal.on_abort(move || token.cancel());
-  }
-  AsyncTask::with_optional_signal(AsyncPerfetch { url, config, token }, signal)
-}
-
-struct AsyncPerfetch {
-  url: String,
-  config: Config,
+#[napi(js_name = "DownloadTask")]
+pub struct JsDownloadTask {
+  inner: Mutex<Option<(DownloadTask, Rx)>>,
   token: CancellationToken,
 }
 
-impl Task for AsyncPerfetch {
-  type Output = u32;
-  type JsValue = JsNumber;
+pub type JsDownloadCallback = ThreadsafeFunction<JsEvent, (), JsEvent, Status, false>;
 
-  fn compute(&mut self) -> napi::Result<Self::Output> {
-    Ok(1)
+#[napi]
+impl JsDownloadTask {
+  pub const fn new(task: DownloadTask, rx: Rx, token: CancellationToken) -> Self {
+    let inner = Mutex::new(Some((task, rx)));
+    Self { inner, token }
   }
 
-  fn resolve(&mut self, env: Env, output: u32) -> napi::Result<Self::JsValue> {
-    env.create_uint32(output)
+  #[napi]
+  pub fn cancel(&self) {
+    self.token.cancel();
+  }
+
+  /// 开始下载任务
+  /// @param `save_path` 存储路径
+  /// @param `callback` 进度与事件回调函数
+  #[napi]
+  pub async fn start(
+    &self,
+    save_path: String,
+    #[napi(ts_arg_type = "(event: Event) => void")] callback: JsDownloadCallback,
+  ) -> napi::Result<()> {
+    let (task, rx) = self
+      .inner
+      .lock()
+      .take()
+      .convert_err("Download task has already been started or is invalid")?;
+    let save_path: PathBuf = save_path.into();
+    let token = self.token.clone();
+    download_inner(task, rx, save_path, token, callback)
+      .force_send()
+      .await
   }
 }
 
-// #[napi]
-// pub async fn prefetch(
-//   url: String,
-//   config: Config,
-//   mut abort_signal: Option<AbortSignal>,
-// ) -> napi::Result<DownloadTask> {
-//   let token = CancellationToken::new();
-//   if let Some(signal) = abort_signal.take() {
-//     let token = token.clone();
-//     signal.on_abort(move || token.cancel());
-//   }
-//   todo!()
-//   // prefetch_inner(url, config, token).await
-// }
-
-// pub async fn prefetch_inner(
-//   url: String,
-//   config: Config,
-//   token: CancellationToken,
-// ) -> napi::Result<DownloadTask> {
-//   let url = Url::parse(&url).convert_err("Invalid URL")?;
-//   let config = config.into();
-//   let (tx, rx) = create_channel();
-//   let task = tokio::select! {
-//       () = token.cancelled() => Err(napi::Error::from_reason("Prefetch aborted by user"))?,
-//       res = fast_down_ffi::prefetch(url, config, tx) => res.convert_err("Prefetch failed")?,
-//   };
-//   Ok(DownloadTask {
-//     inner: Mutex::new(Some(task)),
-//     rx: Mutex::new(Some(rx)),
-//     token,
-//   })
-// }
-
-// #[napi]
-// pub struct DownloadTask {
-//   inner: Mutex<Option<fast_down_ffi::DownloadTask>>,
-//   rx: Mutex<Option<Rx>>,
-//   token: CancellationToken,
-// }
-
-// #[napi]
-// impl DownloadTask {
-//   /// 正式开始下载
-//   #[napi]
-//   pub async fn start(
-//     &self,
-//     save_path: String,
-//     #[napi(ts_arg_type = "(event: any) => void")] callback: ThreadsafeFunction<serde_json::Value>,
-//   ) -> napi::Result<()> {
-//     let task = self
-//       .inner
-//       .lock()
-//       .take()
-//       .ok_or_else(|| napi::Error::from_reason("Task already started or invalid"))?;
-//     let rx = self
-//       .rx
-//       .lock()
-//       .take()
-//       .ok_or_else(|| napi::Error::from_reason("Event receiver already consumed"))?;
-//     let token = self.token.clone();
-
-//     // tokio::spawn(async move {
-//     //   while let Ok(event) = rx.recv().await {
-//     // callback.call(
-//     //   serde_json::to_value(&Event::from(event)),
-//     //   ThreadsafeFunctionCallMode::NonBlocking,
-//     // );
-//     //   }
-//     // });
-//     task
-//       .start(PathBuf::from(save_path), token)
-//       .await
-//       .convert_err("Download error")
-//   }
-// }
-
-// /// 获取 Task 中的元数据
-// #[napi]
-// pub fn get_task_info(task: &DownloadTask) -> napi::Result<JsUrlInfo> {
-//   let lock = task.inner.lock();
-//   let (_, info) = lock
-//     .as_ref()
-//     .ok_or_else(|| napi::Error::from_reason("Task info consumed"))?;
-
-//   Ok(JsUrlInfo {
-//     size: info.size as i64,
-//     raw_name: info.raw_name.clone(),
-//     fast_download: info.fast_download,
-//     file_id: format!("{:?}", info.file_id),
-//     final_url: info.final_url.to_string(),
-//   })
-// }
+async fn download_inner(
+  task: DownloadTask,
+  rx: Rx,
+  save_path: PathBuf,
+  token: CancellationToken,
+  callback: JsDownloadCallback,
+) -> napi::Result<()> {
+  let download_fut = task.start(save_path, token.clone());
+  tokio::pin!(download_fut);
+  loop {
+    tokio::select! {
+      res = &mut download_fut => return res.convert_err("Download Task Error"),
+      event = rx.recv() => {
+        match event {
+          Ok(e) => {
+            callback.call(
+              JsEvent::from(e),
+              ThreadsafeFunctionCallMode::NonBlocking,
+            );
+          }
+          Err(_) => break,
+        }
+      }
+    }
+  }
+  Ok(())
+}

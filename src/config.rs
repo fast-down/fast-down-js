@@ -1,16 +1,16 @@
-use crate::Range;
-use fast_down_ffi::utils::Proxy;
+use crate::JsRange;
+use fast_down_ffi::{Config, WriteMethod, utils::Proxy};
 use napi_derive::napi;
 use std::{collections::HashMap, time::Duration};
 
-#[napi]
-pub enum WriteMethod {
+#[napi(js_name = "WriteMethod")]
+pub enum JsWriteMethod {
   Mmap,
   Std,
 }
 
-#[napi(object)]
-pub struct Config {
+#[napi(object, js_name = "Config")]
+pub struct JsConfig {
   /// 线程数量，推荐值 `32` / `16` / `8`。线程越多不意味着越快
   pub threads: Option<u32>,
   /// 设置代理，支持 https、http、socks5 代理
@@ -55,7 +55,7 @@ pub struct Config {
   ///     2. 必须知道文件大小，否则会自动回退到 [`WriteMethod::Std`]
   ///     3. 特殊情况下会出现系统把所有数据全部缓存在内存中，下载完成后一次性写入磁盘，造成下载完成后长时间卡顿
   /// - [`WriteMethod::Std`] 写入方式兼容性最好，会在 `write_buffer_size` 内对片段进行排序，尽量转换为顺序写入
-  pub write_method: Option<WriteMethod>,
+  pub write_method: Option<JsWriteMethod>,
   /// 设置获取元数据的重试次数，推荐值 `10`。注意，这不是下载中的重试次数
   pub retry_times: Option<u32>,
   /// 使用哪些地址来发送请求，推荐值 `Vec::new()`
@@ -68,24 +68,24 @@ pub struct Config {
   /// 最多有 `max_speculative` 个线程在同一分块上竞争下载，以解决下载卡进度 99% 的问题
   pub max_speculative: Option<u32>,
   /// 已经下载过的部分，如果你想下载整个文件，就传 `Vec::new()`
-  pub downloaded_chunk: Option<Vec<Range>>,
+  pub downloaded_chunk: Option<Vec<JsRange>>,
   /// 已下载分块的平滑窗口，单位为字节，推荐值 `8 * 1024`
   ///
   /// 它会过滤掉 `downloaded_chunk` 中小于 `chunk_window` 的小空洞，以减小 HTTP 请求数量
   pub chunk_window: Option<u32>,
 }
 
-impl Config {
+impl JsConfig {
   #[must_use]
-  pub fn into(self) -> fast_down_ffi::Config {
-    fast_down_ffi::Config {
+  pub fn to_ffi_config(&self) -> Config {
+    Config {
       threads: self.threads.unwrap_or(32) as usize,
       proxy: match self.proxy.as_deref() {
         Some("" | "no") => Proxy::No,
         Some("system") | None => Proxy::System,
         Some(p) => Proxy::Custom(p.to_string()),
       },
-      headers: self.headers.unwrap_or_default(),
+      headers: self.headers.clone().unwrap_or_default(),
       min_chunk_size: self.min_chunk_size.unwrap_or(8 * 1024 * 1024).into(),
       write_buffer_size: self.write_buffer_size.unwrap_or(16 * 1024 * 1024) as usize,
       write_queue_cap: self.write_queue_cap.unwrap_or(10240) as usize,
@@ -95,25 +95,24 @@ impl Config {
       accept_invalid_hostnames: self.accept_invalid_hostnames.unwrap_or(false),
       write_method: self
         .write_method
-        .map_or(fast_down_ffi::WriteMethod::Mmap, |m| match m {
-          WriteMethod::Mmap => fast_down_ffi::WriteMethod::Mmap,
-          WriteMethod::Std => fast_down_ffi::WriteMethod::Std,
+        .as_ref()
+        .map_or(WriteMethod::Mmap, |m| match m {
+          JsWriteMethod::Mmap => WriteMethod::Mmap,
+          JsWriteMethod::Std => WriteMethod::Std,
         }),
       retry_times: self.retry_times.unwrap_or(10) as usize,
       local_address: self
         .local_address
-        .unwrap_or_default()
-        .iter()
-        .filter_map(|p| p.parse().ok())
-        .collect(),
+        .as_ref()
+        .map(|e| e.iter().filter_map(|p| p.parse().ok()).collect())
+        .unwrap_or_default(),
       max_speculative: self.max_speculative.unwrap_or(3) as usize,
       #[allow(clippy::cast_sign_loss)]
       downloaded_chunk: self
         .downloaded_chunk
-        .unwrap_or_default()
-        .iter()
-        .map(|p| p.start as u64..p.end as u64)
-        .collect(),
+        .as_ref()
+        .map(|e| e.iter().map(|p| p.start as u64..p.end as u64).collect())
+        .unwrap_or_default(),
       chunk_window: self.chunk_window.unwrap_or(8 * 1024).into(),
     }
   }
