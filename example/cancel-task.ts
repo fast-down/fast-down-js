@@ -17,12 +17,8 @@ async function main() {
     console.log('Download canceled')
   }, 3000)
   const filename = task.info.filename()
-  const save_dir = resolve('downlaod')
-  try {
-    await fs.mkdir(save_dir, { recursive: true })
-  } catch (error) {
-    console.error('Error creating directory:', error)
-  }
+  const save_dir = resolve('download')
+  await fs.mkdir(save_dir, { recursive: true })
   const path = join(save_dir, filename)
   console.log(path)
   console.time('Download')
