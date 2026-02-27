@@ -1,8 +1,8 @@
 use crate::{Event, ForceSendExt, ToNapiError, UrlInfo};
 use fast_down_ffi::Rx;
 use napi::{
-  Status,
   threadsafe_function::{ThreadsafeFunction, ThreadsafeFunctionCallMode},
+  Status,
 };
 use napi_derive::napi;
 use parking_lot::Mutex;
@@ -43,7 +43,7 @@ impl DownloadTask {
   pub async fn start(
     &self,
     save_path: String,
-    #[napi(ts_arg_type = "(event: Event) => void")] callback: DownloadCallback,
+    #[napi(ts_arg_type = "(event: Event) => void")] callback: Option<DownloadCallback>,
   ) -> napi::Result<()> {
     let (task, rx) = self
       .inner
@@ -63,9 +63,12 @@ async fn download_inner(
   rx: Rx,
   save_path: PathBuf,
   token: CancellationToken,
-  callback: DownloadCallback,
+  callback: Option<DownloadCallback>,
 ) -> napi::Result<()> {
   let download_fut = task.start(save_path, token.clone());
+  let Some(callback) = callback else {
+    return download_fut.await.convert_err("Download Task Error");
+  };
   tokio::pin!(download_fut);
   loop {
     tokio::select! {

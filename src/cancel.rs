@@ -8,7 +8,7 @@ pub struct CancellationToken {
 
 #[napi]
 impl CancellationToken {
-  #[napi(factory)]
+  #[napi(constructor)]
   #[must_use]
   pub fn new() -> Self {
     let token = tokio_util::sync::CancellationToken::new();

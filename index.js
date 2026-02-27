@@ -73,7 +73,7 @@ function requireNative() {
   } else if (process.platform === 'android') {
     if (process.arch === 'arm64') {
       try {
-        return require('./fast-down-js.android-arm64.node')
+        return require('./fast-down.android-arm64.node')
       } catch (e) {
         loadErrors.push(e)
       }
@@ -89,7 +89,7 @@ function requireNative() {
       }
     } else if (process.arch === 'arm') {
       try {
-        return require('./fast-down-js.android-arm-eabi.node')
+        return require('./fast-down.android-arm-eabi.node')
       } catch (e) {
         loadErrors.push(e)
       }
@@ -109,7 +109,7 @@ function requireNative() {
   } else if (process.platform === 'win32') {
     if (process.arch === 'x64') {
       try {
-        return require('./fast-down-js.win32-x64-msvc.node')
+        return require('./fast-down.win32-x64-msvc.node')
       } catch (e) {
         loadErrors.push(e)
       }
@@ -125,7 +125,7 @@ function requireNative() {
       }
     } else if (process.arch === 'ia32') {
       try {
-        return require('./fast-down-js.win32-ia32-msvc.node')
+        return require('./fast-down.win32-ia32-msvc.node')
       } catch (e) {
         loadErrors.push(e)
       }
@@ -141,7 +141,7 @@ function requireNative() {
       }
     } else if (process.arch === 'arm64') {
       try {
-        return require('./fast-down-js.win32-arm64-msvc.node')
+        return require('./fast-down.win32-arm64-msvc.node')
       } catch (e) {
         loadErrors.push(e)
       }
@@ -160,7 +160,7 @@ function requireNative() {
     }
   } else if (process.platform === 'darwin') {
     try {
-      return require('./fast-down-js.darwin-universal.node')
+      return require('./fast-down.darwin-universal.node')
     } catch (e) {
       loadErrors.push(e)
     }
@@ -176,7 +176,7 @@ function requireNative() {
     }
     if (process.arch === 'x64') {
       try {
-        return require('./fast-down-js.darwin-x64.node')
+        return require('./fast-down.darwin-x64.node')
       } catch (e) {
         loadErrors.push(e)
       }
@@ -192,7 +192,7 @@ function requireNative() {
       }
     } else if (process.arch === 'arm64') {
       try {
-        return require('./fast-down-js.darwin-arm64.node')
+        return require('./fast-down.darwin-arm64.node')
       } catch (e) {
         loadErrors.push(e)
       }
@@ -212,7 +212,7 @@ function requireNative() {
   } else if (process.platform === 'freebsd') {
     if (process.arch === 'x64') {
       try {
-        return require('./fast-down-js.freebsd-x64.node')
+        return require('./fast-down.freebsd-x64.node')
       } catch (e) {
         loadErrors.push(e)
       }
@@ -228,7 +228,7 @@ function requireNative() {
       }
     } else if (process.arch === 'arm64') {
       try {
-        return require('./fast-down-js.freebsd-arm64.node')
+        return require('./fast-down.freebsd-arm64.node')
       } catch (e) {
         loadErrors.push(e)
       }
@@ -249,7 +249,7 @@ function requireNative() {
     if (process.arch === 'x64') {
       if (isMusl()) {
         try {
-          return require('./fast-down-js.linux-x64-musl.node')
+          return require('./fast-down.linux-x64-musl.node')
         } catch (e) {
           loadErrors.push(e)
         }
@@ -265,7 +265,7 @@ function requireNative() {
         }
       } else {
         try {
-          return require('./fast-down-js.linux-x64-gnu.node')
+          return require('./fast-down.linux-x64-gnu.node')
         } catch (e) {
           loadErrors.push(e)
         }
@@ -283,7 +283,7 @@ function requireNative() {
     } else if (process.arch === 'arm64') {
       if (isMusl()) {
         try {
-          return require('./fast-down-js.linux-arm64-musl.node')
+          return require('./fast-down.linux-arm64-musl.node')
         } catch (e) {
           loadErrors.push(e)
         }
@@ -299,7 +299,7 @@ function requireNative() {
         }
       } else {
         try {
-          return require('./fast-down-js.linux-arm64-gnu.node')
+          return require('./fast-down.linux-arm64-gnu.node')
         } catch (e) {
           loadErrors.push(e)
         }
@@ -317,7 +317,7 @@ function requireNative() {
     } else if (process.arch === 'arm') {
       if (isMusl()) {
         try {
-          return require('./fast-down-js.linux-arm-musleabihf.node')
+          return require('./fast-down.linux-arm-musleabihf.node')
         } catch (e) {
           loadErrors.push(e)
         }
@@ -333,7 +333,7 @@ function requireNative() {
         }
       } else {
         try {
-          return require('./fast-down-js.linux-arm-gnueabihf.node')
+          return require('./fast-down.linux-arm-gnueabihf.node')
         } catch (e) {
           loadErrors.push(e)
         }
@@ -351,7 +351,7 @@ function requireNative() {
     } else if (process.arch === 'loong64') {
       if (isMusl()) {
         try {
-          return require('./fast-down-js.linux-loong64-musl.node')
+          return require('./fast-down.linux-loong64-musl.node')
         } catch (e) {
           loadErrors.push(e)
         }
@@ -367,7 +367,7 @@ function requireNative() {
         }
       } else {
         try {
-          return require('./fast-down-js.linux-loong64-gnu.node')
+          return require('./fast-down.linux-loong64-gnu.node')
         } catch (e) {
           loadErrors.push(e)
         }
@@ -385,7 +385,7 @@ function requireNative() {
     } else if (process.arch === 'riscv64') {
       if (isMusl()) {
         try {
-          return require('./fast-down-js.linux-riscv64-musl.node')
+          return require('./fast-down.linux-riscv64-musl.node')
         } catch (e) {
           loadErrors.push(e)
         }
@@ -401,7 +401,7 @@ function requireNative() {
         }
       } else {
         try {
-          return require('./fast-down-js.linux-riscv64-gnu.node')
+          return require('./fast-down.linux-riscv64-gnu.node')
         } catch (e) {
           loadErrors.push(e)
         }
@@ -418,7 +418,7 @@ function requireNative() {
       }
     } else if (process.arch === 'ppc64') {
       try {
-        return require('./fast-down-js.linux-ppc64-gnu.node')
+        return require('./fast-down.linux-ppc64-gnu.node')
       } catch (e) {
         loadErrors.push(e)
       }
@@ -434,7 +434,7 @@ function requireNative() {
       }
     } else if (process.arch === 's390x') {
       try {
-        return require('./fast-down-js.linux-s390x-gnu.node')
+        return require('./fast-down.linux-s390x-gnu.node')
       } catch (e) {
         loadErrors.push(e)
       }
@@ -454,7 +454,7 @@ function requireNative() {
   } else if (process.platform === 'openharmony') {
     if (process.arch === 'arm64') {
       try {
-        return require('./fast-down-js.openharmony-arm64.node')
+        return require('./fast-down.openharmony-arm64.node')
       } catch (e) {
         loadErrors.push(e)
       }
@@ -470,7 +470,7 @@ function requireNative() {
       }
     } else if (process.arch === 'x64') {
       try {
-        return require('./fast-down-js.openharmony-x64.node')
+        return require('./fast-down.openharmony-x64.node')
       } catch (e) {
         loadErrors.push(e)
       }
@@ -486,7 +486,7 @@ function requireNative() {
       }
     } else if (process.arch === 'arm') {
       try {
-        return require('./fast-down-js.openharmony-arm.node')
+        return require('./fast-down.openharmony-arm.node')
       } catch (e) {
         loadErrors.push(e)
       }
@@ -514,7 +514,7 @@ if (!nativeBinding || process.env.NAPI_RS_FORCE_WASI) {
   let wasiBinding = null
   let wasiBindingError = null
   try {
-    wasiBinding = require('./fast-down-js.wasi.cjs')
+    wasiBinding = require('./fast-down.wasi.cjs')
     nativeBinding = wasiBinding
   } catch (err) {
     if (process.env.NAPI_RS_FORCE_WASI) {

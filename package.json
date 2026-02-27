@@ -1,44 +1,31 @@
 {
   "name": "@fast-down/fast-down",
   "version": "1.0.0",
-  "description": "Template project for writing node package with napi-rs",
+  "description": "fast-down 的 js 接口",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/fast-down/js.git"
+    "url": "git+ssh://git@github.com/fast-down/fast-down-js.git"
   },
   "license": "MIT",
-  "browser": "browser.js",
   "keywords": [
-    "napi-rs",
-    "NAPI",
-    "N-API",
+    "download",
     "Rust",
-    "node-addon",
-    "node-addon-api"
+    "node-addon"
   ],
   "files": [
     "index.d.ts",
-    "index.js",
-    "browser.js"
+    "index.js"
   ],
   "napi": {
-    "binaryName": "fast-down-js",
+    "binaryName": "fast-down",
     "targets": [
       "x86_64-pc-windows-msvc",
       "x86_64-apple-darwin",
-      "x86_64-unknown-linux-gnu",
       "x86_64-unknown-linux-musl",
-      "aarch64-unknown-linux-gnu",
-      "i686-pc-windows-msvc",
-      "armv7-unknown-linux-gnueabihf",
       "aarch64-apple-darwin",
-      "aarch64-linux-android",
-      "x86_64-unknown-freebsd",
       "aarch64-unknown-linux-musl",
-      "aarch64-pc-windows-msvc",
-      "armv7-linux-androideabi",
-      "wasm32-wasip1-threads"
+      "aarch64-pc-windows-msvc"
     ]
   },
   "engines": {
@@ -50,7 +37,6 @@
   },
   "scripts": {
     "artifacts": "napi artifacts",
-    "bench": "node --import @oxc-node/core/register benchmark/bench.ts",
     "build": "napi build --platform --release",
     "build:debug": "napi build --platform",
     "format": "run-p format:prettier format:rs format:toml",
