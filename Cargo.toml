@@ -2,15 +2,39 @@
 [package]
 authors = ["share121 <me@s121.top>"]
 edition = "2024"
-name = "fast-down-js"
+name = "fast_down"
 version = "0.1.0"
 
 [lib]
 crate-type = ["cdylib"]
 
 [dependencies]
-napi = "3.0.0"
 napi-derive = "3.0.0"
+parking_lot = "0.12.5"
+serde_json = "1.0.149"
+thiserror = "2.0.18"
+tokio-util = "0.7.18"
+url = "2.5.8"
+
+[dependencies.fast-down-ffi]
+path = "../ffi/"
+
+[dependencies.napi]
+version = "3.0.0"
+features = ["serde-json","tokio_rt"]
+
+[dependencies.serde]
+version = "1.0.228"
+features = ["derive"]
+
+[dependencies.tokio]
+version = "1.49.0"
+features = ["full"]
+
+[dependencies.reqwest]
+version = "0.13.2"
+default-features = false
+features = ["default-tls","brotli","deflate","gzip","http2","socks","system-proxy","zstd"]
 
 [build-dependencies]
 napi-build = "2"
@@ -20,10 +44,17 @@ lto = true
 strip = "symbols"
 
 [lints.clippy]
-all = { level = "deny", priority = -1 }
-pedantic = { level = "deny", priority = -1 }
-nursery = { level = "deny", priority = -1 }
-cargo = { level = "deny", priority = -1 }
-# restriction = { level = "deny", priority = -1 }
 multiple_crate_versions = "allow"
 missing_errors_doc = "allow"
+
+[lints.clippy.all]
+level = "deny"
+priority = -1
+
+[lints.clippy.pedantic]
+level = "deny"
+priority = -1
+
+[lints.clippy.nursery]
+level = "deny"
+priority = -1
