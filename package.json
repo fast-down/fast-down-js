@@ -1,6 +1,6 @@
 {
   "name": "@fast-down/fast-down",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "fast-down 的 js 接口",
   "main": "index.js",
   "repository": {
