@@ -9,9 +9,9 @@ version = "0.1.0"
 crate-type = ["cdylib"]
 
 [dependencies]
-fast-down-ffi = "0.1.4"
-napi = { version = "3.0.0", features = ["tokio_rt"] }
-napi-derive = "3.0.0"
+fast-down-ffi = "0.1.5"
+napi = { version = "3.8.3", features = ["tokio_rt"] }
+napi-derive = "3.5.2"
 parking_lot = "0.12.5"
 sanitize-filename = "0.6.0"
 tokio = { version = "1.49.0", features = ["full"] }
