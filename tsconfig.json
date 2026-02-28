@@ -7,8 +7,11 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "outDir": "./dist",
+    "rootDir": "./lib",
+    "declaration": true,
   },
-  "include": ["."],
-  "exclude": ["node_modules", "bench", "__test__"]
+  "include": ["lib/**/*"],
+  "exclude": ["node_modules", "bench", "__test__", "example", "dist"],
 }

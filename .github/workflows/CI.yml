@@ -229,6 +229,8 @@ jobs:
       - name: List packages
         run: ls -R .
         shell: bash
+      - name: Build TypeScript
+        run: yarn tsc
       - name: Test bindings
         run: yarn test
   test-linux-binding:
@@ -296,6 +298,8 @@ jobs:
           platforms: all
       - run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
         if: ${{ contains(matrix.target, 'arm') }}
+      - name: Build TypeScript
+        run: yarn tsc
       - name: Test bindings natively
         if: ${{ matrix.target == 'x86_64-unknown-linux-gnu' }}
         run: yarn test
@@ -338,6 +342,8 @@ jobs:
       - name: List packages
         run: ls -R ./npm
         shell: bash
+      - name: Build TypeScript
+        run: yarn tsc
       - name: Publish
         run: |
           npm config set provenance true

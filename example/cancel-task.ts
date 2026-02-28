@@ -1,11 +1,11 @@
-import { prefetch } from '..'
+import { FastDown } from '../dist/'
 import { join, resolve } from 'node:path'
 import { promises as fs } from 'node:fs'
 
 const URL = 'https://mirrors.tuna.tsinghua.edu.cn/archlinux/iso/2026.02.01/archlinux-x86_64.iso'
 
 async function main() {
-  const task = await prefetch(URL, {
+  const task = await FastDown.prefetch(URL, {
     proxy: 'no',
     headers: {
       'User-Agent':

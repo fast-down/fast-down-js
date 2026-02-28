@@ -2,7 +2,14 @@
   "name": "@fast-down/fast-down",
   "version": "1.0.3",
   "description": "fast-down 的 js 接口",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/fast-down/fast-down-js.git"
@@ -14,6 +21,7 @@
     "node-addon"
   ],
   "files": [
+    "dist",
     "index.d.ts",
     "index.js"
   ],
@@ -46,14 +54,15 @@
     "artifacts": "napi artifacts",
     "build": "napi build --platform --release",
     "build:debug": "napi build --platform",
+    "build:ts": "tsc",
     "format": "run-p format:prettier format:rs format:toml",
     "format:prettier": "prettier . -w",
     "format:toml": "taplo format",
     "format:rs": "cargo fmt",
     "lint": "oxlint .",
-    "prepublishOnly": "napi prepublish -t npm",
+    "prepublishOnly": "yarn build:ts && napi prepublish -t npm",
     "test": "ava",
-    "preversion": "napi build --platform && git add .",
+    "preversion": "yarn build && yarn build:ts && git add .",
     "version": "napi version",
     "prepare": "husky"
   },

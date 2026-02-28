@@ -1,16 +1,16 @@
-import { CancellationToken, prefetch } from '..'
+import { FastDown } from '../dist'
 import { join, resolve } from 'node:path'
 import { promises as fs } from 'node:fs'
 
 const URL = 'https://mirrors.tuna.tsinghua.edu.cn/archlinux/iso/2026.02.01/archlinux-x86_64.iso'
 
 async function main() {
-  const token = new CancellationToken()
+  const token = new FastDown.CancellationToken()
   setTimeout(() => {
     token.cancel()
     console.log('Download canceled', token.isCancelled())
   }, 3000)
-  const task = await prefetch(
+  const task = await FastDown.prefetch(
     URL,
     {
       proxy: 'no',
