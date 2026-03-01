@@ -8,6 +8,7 @@ export declare class CancellationToken {
 
 export declare class DownloadTask {
   cancel(): void
+  isCancelled(): boolean
   get info(): UrlInfo
   /**
    * 开始下载任务

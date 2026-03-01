@@ -31,6 +31,11 @@ impl DownloadTask {
     self.token.cancel();
   }
 
+  #[napi]
+  pub fn is_cancelled(&self) -> bool {
+    self.token.is_cancelled()
+  }
+
   #[napi(getter)]
   pub fn info(&self) -> UrlInfo {
     self.info.clone()

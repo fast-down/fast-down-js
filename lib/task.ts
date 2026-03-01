@@ -19,6 +19,9 @@ export class DownloadTask {
   cancel() {
     this._rawTask.cancel()
   }
+  isCancelled() {
+    return this._rawTask.isCancelled()
+  }
   async start(savePath: string, callback?: (event: Event) => void): Promise<void> {
     if (!callback) return this._rawTask.start(savePath)
     return this._rawTask.start(savePath, (rawEvent) => {

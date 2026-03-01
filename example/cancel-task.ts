@@ -14,7 +14,7 @@ async function main() {
   })
   setTimeout(() => {
     task.cancel()
-    console.log('Download canceled')
+    console.log('Download canceled', task.isCancelled())
   }, 3000)
   const filename = task.info.filename()
   const saveDir = resolve('download')
