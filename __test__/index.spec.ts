@@ -1,5 +1,5 @@
 import test from 'ava'
-import { FastDown } from '../dist'
+import { prefetch } from '../dist'
 import { join, resolve } from 'node:path'
 import { promises as fs } from 'node:fs'
 import { createHash } from 'node:crypto'
@@ -10,7 +10,7 @@ test('sync function from native code', async (t) => {
   t.timeout(300000)
 
   const URL = 'https://mirrors.tuna.tsinghua.edu.cn/archlinux/iso/2026.02.01/archlinux-x86_64.iso'
-  const task = await FastDown.prefetch(URL, {
+  const task = await prefetch(URL, {
     proxy: 'no',
     headers: {
       'User-Agent':
