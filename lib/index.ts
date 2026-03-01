@@ -1,4 +1,4 @@
-import { CancellationToken, Config, Event, Range, UrlInfo, WriteMethod, prefetch as rawPrefetch } from '../index.js'
+import { CancellationToken, Config, Event, Range, UrlInfo, prefetch as rawPrefetch } from '../index.js'
 import { DownloadTask } from './task.js'
 
 export async function prefetch(url: string, config?: Config & { signal?: AbortSignal }) {
@@ -8,5 +8,5 @@ export async function prefetch(url: string, config?: Config & { signal?: AbortSi
   return new DownloadTask(await rawPrefetch(url, config, token))
 }
 
-export { Config, DownloadTask, Event, Range, UrlInfo, WriteMethod }
+export { Config, DownloadTask, Event, Range, UrlInfo }
 export * from './merge.js'

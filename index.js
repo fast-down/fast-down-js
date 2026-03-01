@@ -557,9 +557,8 @@ if (!nativeBinding) {
   throw new Error(`Failed to load native binding`)
 }
 
-const { CancellationToken, DownloadTask, UrlInfo, prefetch, WriteMethod } = nativeBinding
+const { CancellationToken, DownloadTask, UrlInfo, prefetch } = nativeBinding
 export { CancellationToken }
 export { DownloadTask }
 export { UrlInfo }
 export { prefetch }
-export { WriteMethod }

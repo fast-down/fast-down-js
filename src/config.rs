@@ -3,12 +3,6 @@ use fast_down_ffi::utils::Proxy;
 use napi_derive::napi;
 use std::{collections::HashMap, time::Duration};
 
-#[napi]
-pub enum WriteMethod {
-  Mmap,
-  Std,
-}
-
 #[napi(object)]
 pub struct Config {
   /// 线程数量，默认值 `32`。线程越多不意味着越快
@@ -29,8 +23,8 @@ pub struct Config {
   pub min_chunk_size: Option<u32>,
   /// 写入缓冲区大小，单位为字节，默认值 `16 * 1024 * 1024`
   ///
-  /// - 只对 [`WriteMethod::Std`] 写入方法有效，有利于将随机写入转换为顺序写入，提高写入速度
-  /// - 对于 [`WriteMethod::Mmap`] 写入方法无效，因为写入缓冲区由系统决定
+  /// - 只对 `std` 写入方法有效，有利于将随机写入转换为顺序写入，提高写入速度
+  /// - 对于 `mmap` 写入方法无效，因为写入缓冲区由系统决定
   pub write_buffer_size: Option<u32>,
   /// 写入队列容量，默认值 `10240`
   ///
@@ -49,14 +43,15 @@ pub struct Config {
   pub accept_invalid_certs: Option<bool>,
   /// 是否接受无效主机名（危险），默认值 `false`
   pub accept_invalid_hostnames: Option<bool>,
-  /// 写入磁盘方式，默认值 [`WriteMethod::Mmap`]
+  /// 写入磁盘方式，默认值 `"mmap"`
   ///
-  /// - [`WriteMethod::Mmap`] 写入方式速度最快，将写入交给操作系统执行，但是：
-  ///     1. 在 32 位系统上最大只能映射 4GB 的文件，所以在 32 位系统上，会自动回退到 [`WriteMethod::Std`]
-  ///     2. 必须知道文件大小，否则会自动回退到 [`WriteMethod::Std`]
+  /// - `"mmap"` 写入方式速度最快，将写入交给操作系统执行，但是：
+  ///     1. 在 32 位系统上最大只能映射 4GB 的文件，所以在 32 位系统上，会自动回退到 `"std"`
+  ///     2. 必须知道文件大小，否则会自动回退到 `"std"`
   ///     3. 特殊情况下会出现系统把所有数据全部缓存在内存中，下载完成后一次性写入磁盘，造成下载完成后长时间卡顿
-  /// - [`WriteMethod::Std`] 写入方式兼容性最好，会在 `write_buffer_size` 内对片段进行排序，尽量转换为顺序写入
-  pub write_method: Option<WriteMethod>,
+  /// - `"std"` 写入方式兼容性最好，会在 `write_buffer_size` 内对片段进行排序，尽量转换为顺序写入
+  #[napi(ts_type = "'mmap' | 'std'")]
+  pub write_method: Option<String>,
   /// 设置获取元数据的重试次数，默认值 `10`。注意，这不是下载中的重试次数
   pub retry_times: Option<u32>,
   /// 使用哪些地址来发送请求，默认值 `Vec::new()`
@@ -94,13 +89,10 @@ impl Config {
       pull_timeout: Duration::from_millis(self.pull_timeout_ms.unwrap_or(5000).into()),
       accept_invalid_certs: self.accept_invalid_certs.unwrap_or(false),
       accept_invalid_hostnames: self.accept_invalid_hostnames.unwrap_or(false),
-      write_method: self.write_method.as_ref().map_or(
-        fast_down_ffi::WriteMethod::Mmap,
-        |m| match m {
-          WriteMethod::Mmap => fast_down_ffi::WriteMethod::Mmap,
-          WriteMethod::Std => fast_down_ffi::WriteMethod::Std,
-        },
-      ),
+      write_method: match self.write_method.as_deref().unwrap_or_default() {
+        "std" => fast_down_ffi::WriteMethod::Std,
+        _ => fast_down_ffi::WriteMethod::Mmap,
+      },
       retry_times: self.retry_times.unwrap_or(10) as usize,
       local_address: self
         .local_address
