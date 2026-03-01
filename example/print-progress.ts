@@ -13,17 +13,19 @@ async function main() {
     },
   })
   const filename = task.info.filename()
-  const save_dir = resolve('download')
-  await fs.mkdir(save_dir, { recursive: true })
-  const path = join(save_dir, filename)
+  const saveDir = resolve('download')
+  await fs.mkdir(saveDir, { recursive: true })
+  const path = join(saveDir, filename)
   console.log(path)
 
+  const fileSize = task.info.size
   let progress: Range[] = []
-  let intervalId = setInterval(() => {
-    const curr_size = progress.reduce((acc, cur) => acc + cur.end - cur.start, 0)
-    const percentage = Math.round((curr_size / task.info.size) * 100)
-    console.log(`Downloaded ${curr_size} bytes (${percentage}%)`)
-  }, 1000)
+  const printProgress = () => {
+    const currSize = progress.reduce((acc, cur) => acc + cur.end - cur.start, 0)
+    const percentage = (currSize / fileSize) * 100
+    console.log(`${currSize}/${fileSize} (${percentage.toFixed(2)}%)`)
+  }
+  const intervalId = setInterval(printProgress, 1000)
   console.time('Download')
   await task.start(path, (event) => {
     switch (event.type) {
@@ -33,8 +35,9 @@ async function main() {
         break
     }
   })
-  clearInterval(intervalId)
+  printProgress()
   console.timeEnd('Download')
+  clearInterval(intervalId)
 }
 
 main()

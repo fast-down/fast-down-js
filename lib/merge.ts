@@ -5,11 +5,11 @@ export function mergeProgress(arr: Range[], range: Range) {
   let left = 0
   let right = arr.length
   while (left < right) {
-    let mid = Math.floor((left + right) / 2)
+    const mid = Math.floor((left + right) / 2)
     if (arr[mid].end < cStart) left = mid + 1
     else right = mid
   }
-  let i = left
+  const i = left
   if (i === arr.length) {
     arr.push({ start: cStart, end: cEnd })
     return

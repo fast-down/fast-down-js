@@ -9,4 +9,4 @@ export async function prefetch(url: string, config?: Config & { signal?: AbortSi
 }
 
 export { Config, DownloadTask, Event, Range, UrlInfo, WriteMethod }
-export * from './merge'
+export * from './merge.js'

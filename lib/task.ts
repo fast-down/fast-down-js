@@ -1,15 +1,15 @@
 import { DownloadTask as RawDownloadTask, Range } from '../index.js'
 
 export type Event =
-  | { type: 'PrefetchError'; message: string; id?: never; range?: never }
-  | { type: 'Pulling'; id: number; message?: never; range?: never }
-  | { type: 'PullError'; id: number; message: string; range?: never }
-  | { type: 'PullTimeout'; id: number; message?: never; range?: never }
-  | { type: 'PullProgress'; id: number; range: Range; message?: never }
-  | { type: 'PushError'; id: number; message: string; range?: never }
-  | { type: 'PushProgress'; id: number; range: Range; message?: never }
-  | { type: 'FlushError'; message: string; id?: never; range?: never }
-  | { type: 'Finished'; id: number; message?: never; range?: never }
+  | { type: 'PrefetchError'; message: string }
+  | { type: 'Pulling'; id: number }
+  | { type: 'PullError'; id: number; message: string }
+  | { type: 'PullTimeout'; id: number }
+  | { type: 'PullProgress'; id: number; range: Range }
+  | { type: 'PushError'; id: number; message: string }
+  | { type: 'PushProgress'; id: number; range: Range }
+  | { type: 'FlushError'; message: string }
+  | { type: 'Finished'; id: number }
 
 export class DownloadTask {
   constructor(private _rawTask: RawDownloadTask) {}

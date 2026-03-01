@@ -19,9 +19,9 @@ async function main() {
     signal: controller.signal,
   })
   const filename = task.info.filename()
-  const save_dir = resolve('download')
-  await fs.mkdir(save_dir, { recursive: true })
-  const path = join(save_dir, filename)
+  const saveDir = resolve('download')
+  await fs.mkdir(saveDir, { recursive: true })
+  const path = join(saveDir, filename)
   console.log(path)
   console.time('Download')
   await task.start(path)
