@@ -81,8 +81,8 @@ function requireNative() {
       try {
         const binding = require('@fast-down/fast-down-android-arm64')
         const bindingPackageVersion = require('@fast-down/fast-down-android-arm64/package.json').version
-        if (bindingPackageVersion !== '1.0.4' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-          throw new Error(`Native binding package version mismatch, expected 1.0.4 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+        if (bindingPackageVersion !== '1.0.5' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+          throw new Error(`Native binding package version mismatch, expected 1.0.5 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
         return binding
       } catch (e) {
@@ -97,8 +97,8 @@ function requireNative() {
       try {
         const binding = require('@fast-down/fast-down-android-arm-eabi')
         const bindingPackageVersion = require('@fast-down/fast-down-android-arm-eabi/package.json').version
-        if (bindingPackageVersion !== '1.0.4' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-          throw new Error(`Native binding package version mismatch, expected 1.0.4 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+        if (bindingPackageVersion !== '1.0.5' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+          throw new Error(`Native binding package version mismatch, expected 1.0.5 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
         return binding
       } catch (e) {
@@ -117,8 +117,8 @@ function requireNative() {
       try {
         const binding = require('@fast-down/fast-down-win32-x64-msvc')
         const bindingPackageVersion = require('@fast-down/fast-down-win32-x64-msvc/package.json').version
-        if (bindingPackageVersion !== '1.0.4' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-          throw new Error(`Native binding package version mismatch, expected 1.0.4 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+        if (bindingPackageVersion !== '1.0.5' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+          throw new Error(`Native binding package version mismatch, expected 1.0.5 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
         return binding
       } catch (e) {
@@ -133,8 +133,8 @@ function requireNative() {
       try {
         const binding = require('@fast-down/fast-down-win32-ia32-msvc')
         const bindingPackageVersion = require('@fast-down/fast-down-win32-ia32-msvc/package.json').version
-        if (bindingPackageVersion !== '1.0.4' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-          throw new Error(`Native binding package version mismatch, expected 1.0.4 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+        if (bindingPackageVersion !== '1.0.5' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+          throw new Error(`Native binding package version mismatch, expected 1.0.5 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
         return binding
       } catch (e) {
@@ -149,8 +149,8 @@ function requireNative() {
       try {
         const binding = require('@fast-down/fast-down-win32-arm64-msvc')
         const bindingPackageVersion = require('@fast-down/fast-down-win32-arm64-msvc/package.json').version
-        if (bindingPackageVersion !== '1.0.4' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-          throw new Error(`Native binding package version mismatch, expected 1.0.4 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+        if (bindingPackageVersion !== '1.0.5' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+          throw new Error(`Native binding package version mismatch, expected 1.0.5 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
         return binding
       } catch (e) {
@@ -168,8 +168,8 @@ function requireNative() {
     try {
       const binding = require('@fast-down/fast-down-darwin-universal')
       const bindingPackageVersion = require('@fast-down/fast-down-darwin-universal/package.json').version
-      if (bindingPackageVersion !== '1.0.4' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-        throw new Error(`Native binding package version mismatch, expected 1.0.4 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+      if (bindingPackageVersion !== '1.0.5' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+        throw new Error(`Native binding package version mismatch, expected 1.0.5 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
       }
       return binding
     } catch (e) {
@@ -184,8 +184,8 @@ function requireNative() {
       try {
         const binding = require('@fast-down/fast-down-darwin-x64')
         const bindingPackageVersion = require('@fast-down/fast-down-darwin-x64/package.json').version
-        if (bindingPackageVersion !== '1.0.4' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-          throw new Error(`Native binding package version mismatch, expected 1.0.4 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+        if (bindingPackageVersion !== '1.0.5' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+          throw new Error(`Native binding package version mismatch, expected 1.0.5 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
         return binding
       } catch (e) {
@@ -200,8 +200,8 @@ function requireNative() {
       try {
         const binding = require('@fast-down/fast-down-darwin-arm64')
         const bindingPackageVersion = require('@fast-down/fast-down-darwin-arm64/package.json').version
-        if (bindingPackageVersion !== '1.0.4' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-          throw new Error(`Native binding package version mismatch, expected 1.0.4 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+        if (bindingPackageVersion !== '1.0.5' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+          throw new Error(`Native binding package version mismatch, expected 1.0.5 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
         return binding
       } catch (e) {
@@ -220,8 +220,8 @@ function requireNative() {
       try {
         const binding = require('@fast-down/fast-down-freebsd-x64')
         const bindingPackageVersion = require('@fast-down/fast-down-freebsd-x64/package.json').version
-        if (bindingPackageVersion !== '1.0.4' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-          throw new Error(`Native binding package version mismatch, expected 1.0.4 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+        if (bindingPackageVersion !== '1.0.5' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+          throw new Error(`Native binding package version mismatch, expected 1.0.5 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
         return binding
       } catch (e) {
@@ -236,8 +236,8 @@ function requireNative() {
       try {
         const binding = require('@fast-down/fast-down-freebsd-arm64')
         const bindingPackageVersion = require('@fast-down/fast-down-freebsd-arm64/package.json').version
-        if (bindingPackageVersion !== '1.0.4' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-          throw new Error(`Native binding package version mismatch, expected 1.0.4 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+        if (bindingPackageVersion !== '1.0.5' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+          throw new Error(`Native binding package version mismatch, expected 1.0.5 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
         return binding
       } catch (e) {
@@ -257,8 +257,8 @@ function requireNative() {
         try {
           const binding = require('@fast-down/fast-down-linux-x64-musl')
           const bindingPackageVersion = require('@fast-down/fast-down-linux-x64-musl/package.json').version
-          if (bindingPackageVersion !== '1.0.4' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-            throw new Error(`Native binding package version mismatch, expected 1.0.4 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+          if (bindingPackageVersion !== '1.0.5' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+            throw new Error(`Native binding package version mismatch, expected 1.0.5 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
           return binding
         } catch (e) {
@@ -273,8 +273,8 @@ function requireNative() {
         try {
           const binding = require('@fast-down/fast-down-linux-x64-gnu')
           const bindingPackageVersion = require('@fast-down/fast-down-linux-x64-gnu/package.json').version
-          if (bindingPackageVersion !== '1.0.4' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-            throw new Error(`Native binding package version mismatch, expected 1.0.4 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+          if (bindingPackageVersion !== '1.0.5' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+            throw new Error(`Native binding package version mismatch, expected 1.0.5 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
           return binding
         } catch (e) {
@@ -291,8 +291,8 @@ function requireNative() {
         try {
           const binding = require('@fast-down/fast-down-linux-arm64-musl')
           const bindingPackageVersion = require('@fast-down/fast-down-linux-arm64-musl/package.json').version
-          if (bindingPackageVersion !== '1.0.4' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-            throw new Error(`Native binding package version mismatch, expected 1.0.4 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+          if (bindingPackageVersion !== '1.0.5' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+            throw new Error(`Native binding package version mismatch, expected 1.0.5 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
           return binding
         } catch (e) {
@@ -307,8 +307,8 @@ function requireNative() {
         try {
           const binding = require('@fast-down/fast-down-linux-arm64-gnu')
           const bindingPackageVersion = require('@fast-down/fast-down-linux-arm64-gnu/package.json').version
-          if (bindingPackageVersion !== '1.0.4' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-            throw new Error(`Native binding package version mismatch, expected 1.0.4 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+          if (bindingPackageVersion !== '1.0.5' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+            throw new Error(`Native binding package version mismatch, expected 1.0.5 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
           return binding
         } catch (e) {
@@ -325,8 +325,8 @@ function requireNative() {
         try {
           const binding = require('@fast-down/fast-down-linux-arm-musleabihf')
           const bindingPackageVersion = require('@fast-down/fast-down-linux-arm-musleabihf/package.json').version
-          if (bindingPackageVersion !== '1.0.4' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-            throw new Error(`Native binding package version mismatch, expected 1.0.4 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+          if (bindingPackageVersion !== '1.0.5' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+            throw new Error(`Native binding package version mismatch, expected 1.0.5 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
           return binding
         } catch (e) {
@@ -341,8 +341,8 @@ function requireNative() {
         try {
           const binding = require('@fast-down/fast-down-linux-arm-gnueabihf')
           const bindingPackageVersion = require('@fast-down/fast-down-linux-arm-gnueabihf/package.json').version
-          if (bindingPackageVersion !== '1.0.4' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-            throw new Error(`Native binding package version mismatch, expected 1.0.4 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+          if (bindingPackageVersion !== '1.0.5' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+            throw new Error(`Native binding package version mismatch, expected 1.0.5 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
           return binding
         } catch (e) {
@@ -359,8 +359,8 @@ function requireNative() {
         try {
           const binding = require('@fast-down/fast-down-linux-loong64-musl')
           const bindingPackageVersion = require('@fast-down/fast-down-linux-loong64-musl/package.json').version
-          if (bindingPackageVersion !== '1.0.4' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-            throw new Error(`Native binding package version mismatch, expected 1.0.4 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+          if (bindingPackageVersion !== '1.0.5' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+            throw new Error(`Native binding package version mismatch, expected 1.0.5 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
           return binding
         } catch (e) {
@@ -375,8 +375,8 @@ function requireNative() {
         try {
           const binding = require('@fast-down/fast-down-linux-loong64-gnu')
           const bindingPackageVersion = require('@fast-down/fast-down-linux-loong64-gnu/package.json').version
-          if (bindingPackageVersion !== '1.0.4' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-            throw new Error(`Native binding package version mismatch, expected 1.0.4 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+          if (bindingPackageVersion !== '1.0.5' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+            throw new Error(`Native binding package version mismatch, expected 1.0.5 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
           return binding
         } catch (e) {
@@ -393,8 +393,8 @@ function requireNative() {
         try {
           const binding = require('@fast-down/fast-down-linux-riscv64-musl')
           const bindingPackageVersion = require('@fast-down/fast-down-linux-riscv64-musl/package.json').version
-          if (bindingPackageVersion !== '1.0.4' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-            throw new Error(`Native binding package version mismatch, expected 1.0.4 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+          if (bindingPackageVersion !== '1.0.5' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+            throw new Error(`Native binding package version mismatch, expected 1.0.5 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
           return binding
         } catch (e) {
@@ -409,8 +409,8 @@ function requireNative() {
         try {
           const binding = require('@fast-down/fast-down-linux-riscv64-gnu')
           const bindingPackageVersion = require('@fast-down/fast-down-linux-riscv64-gnu/package.json').version
-          if (bindingPackageVersion !== '1.0.4' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-            throw new Error(`Native binding package version mismatch, expected 1.0.4 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+          if (bindingPackageVersion !== '1.0.5' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+            throw new Error(`Native binding package version mismatch, expected 1.0.5 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
           }
           return binding
         } catch (e) {
@@ -426,8 +426,8 @@ function requireNative() {
       try {
         const binding = require('@fast-down/fast-down-linux-ppc64-gnu')
         const bindingPackageVersion = require('@fast-down/fast-down-linux-ppc64-gnu/package.json').version
-        if (bindingPackageVersion !== '1.0.4' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-          throw new Error(`Native binding package version mismatch, expected 1.0.4 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+        if (bindingPackageVersion !== '1.0.5' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+          throw new Error(`Native binding package version mismatch, expected 1.0.5 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
         return binding
       } catch (e) {
@@ -442,8 +442,8 @@ function requireNative() {
       try {
         const binding = require('@fast-down/fast-down-linux-s390x-gnu')
         const bindingPackageVersion = require('@fast-down/fast-down-linux-s390x-gnu/package.json').version
-        if (bindingPackageVersion !== '1.0.4' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-          throw new Error(`Native binding package version mismatch, expected 1.0.4 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+        if (bindingPackageVersion !== '1.0.5' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+          throw new Error(`Native binding package version mismatch, expected 1.0.5 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
         return binding
       } catch (e) {
@@ -462,8 +462,8 @@ function requireNative() {
       try {
         const binding = require('@fast-down/fast-down-openharmony-arm64')
         const bindingPackageVersion = require('@fast-down/fast-down-openharmony-arm64/package.json').version
-        if (bindingPackageVersion !== '1.0.4' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-          throw new Error(`Native binding package version mismatch, expected 1.0.4 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+        if (bindingPackageVersion !== '1.0.5' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+          throw new Error(`Native binding package version mismatch, expected 1.0.5 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
         return binding
       } catch (e) {
@@ -478,8 +478,8 @@ function requireNative() {
       try {
         const binding = require('@fast-down/fast-down-openharmony-x64')
         const bindingPackageVersion = require('@fast-down/fast-down-openharmony-x64/package.json').version
-        if (bindingPackageVersion !== '1.0.4' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-          throw new Error(`Native binding package version mismatch, expected 1.0.4 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+        if (bindingPackageVersion !== '1.0.5' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+          throw new Error(`Native binding package version mismatch, expected 1.0.5 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
         return binding
       } catch (e) {
@@ -494,8 +494,8 @@ function requireNative() {
       try {
         const binding = require('@fast-down/fast-down-openharmony-arm')
         const bindingPackageVersion = require('@fast-down/fast-down-openharmony-arm/package.json').version
-        if (bindingPackageVersion !== '1.0.4' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
-          throw new Error(`Native binding package version mismatch, expected 1.0.4 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
+        if (bindingPackageVersion !== '1.0.5' && process.env.NAPI_RS_ENFORCE_VERSION_CHECK && process.env.NAPI_RS_ENFORCE_VERSION_CHECK !== '0') {
+          throw new Error(`Native binding package version mismatch, expected 1.0.5 but got ${bindingPackageVersion}. You can reinstall dependencies to fix this issue.`)
         }
         return binding
       } catch (e) {
