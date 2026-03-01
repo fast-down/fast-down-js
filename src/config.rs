@@ -16,7 +16,7 @@ pub struct Config {
   pub proxy: Option<String>,
   /// 自定义请求头
   pub headers: Option<HashMap<String, String>>,
-  /// 最小分块大小，单位为字节，默认值 `8 * 1024 * 1024`
+  /// 最小分块大小，单位为字节，默认值 `500 * 1024`
   ///
   /// - 分块太小容易造成强烈竞争
   /// - 当无法分块的时候会进入冗余竞争模式
@@ -52,7 +52,7 @@ pub struct Config {
   /// - `"std"` 写入方式兼容性最好，会在 `write_buffer_size` 内对片段进行排序，尽量转换为顺序写入
   #[napi(ts_type = "'mmap' | 'std'")]
   pub write_method: Option<String>,
-  /// 设置获取元数据的重试次数，默认值 `10`。注意，这不是下载中的重试次数
+  /// 设置获取元数据的重试次数，默认值 `3`。注意，这不是下载中的重试次数
   pub retry_times: Option<u32>,
   /// 使用哪些地址来发送请求，默认值 `Vec::new()`
   ///
@@ -82,7 +82,7 @@ impl Config {
         Some(p) => Proxy::Custom(p.to_string()),
       },
       headers: self.headers.clone().unwrap_or_default(),
-      min_chunk_size: self.min_chunk_size.unwrap_or(8 * 1024 * 1024).into(),
+      min_chunk_size: self.min_chunk_size.unwrap_or(500 * 1024).into(),
       write_buffer_size: self.write_buffer_size.unwrap_or(16 * 1024 * 1024) as usize,
       write_queue_cap: self.write_queue_cap.unwrap_or(10240) as usize,
       retry_gap: Duration::from_millis(self.retry_gap_ms.unwrap_or(500).into()),
@@ -93,7 +93,7 @@ impl Config {
         "std" => fast_down_ffi::WriteMethod::Std,
         _ => fast_down_ffi::WriteMethod::Mmap,
       },
-      retry_times: self.retry_times.unwrap_or(10) as usize,
+      retry_times: self.retry_times.unwrap_or(3) as usize,
       local_address: self
         .local_address
         .as_ref()
