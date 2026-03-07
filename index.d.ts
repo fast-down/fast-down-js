@@ -31,6 +31,7 @@ export declare class UrlInfo {
   finalUrl: string
   etag?: string
   lastModified?: string
+  contentType?: string
   /** 返回清洗后的安全文件名 */
   filename(): string
 }
