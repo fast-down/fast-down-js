@@ -14,6 +14,7 @@ pub struct UrlInfo {
   pub final_url: String,
   pub etag: Option<String>,
   pub last_modified: Option<String>,
+  pub content_type: Option<String>,
 }
 
 #[napi]
@@ -44,6 +45,7 @@ impl From<&fast_down_ffi::UrlInfo> for UrlInfo {
       final_url: v.final_url.to_string(),
       etag: v.file_id.etag.as_ref().map(ToString::to_string),
       last_modified: v.file_id.last_modified.as_ref().map(ToString::to_string),
+      content_type: v.content_type.clone(),
     }
   }
 }

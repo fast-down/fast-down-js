@@ -9,12 +9,12 @@ version = "0.1.0"
 crate-type = ["cdylib"]
 
 [dependencies]
-fast-down-ffi = "0.1.5"
+fast-down-ffi = "0.1.6"
 napi = { version = "3.8.3", features = ["tokio_rt"] }
 napi-derive = "3.5.2"
 parking_lot = "0.12.5"
 sanitize-filename = "0.6.0"
-tokio = { version = "1.49.0", features = ["full"] }
+tokio = { version = "1.50.0", features = ["full"] }
 tokio-util = "0.7.18"
 url = "2.5.8"
 
