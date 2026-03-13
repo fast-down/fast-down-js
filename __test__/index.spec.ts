@@ -51,28 +51,19 @@ test.serial('自定义写入器测试-写入内存', async (t) => {
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0',
     },
   })
-  // const filename = '2-' + task.info.filename()
-  // const saveDir = resolve('download')
-  // await fs.mkdir(saveDir, { recursive: true })
-  // const path = join(saveDir, filename)
-  // console.log(path)
-  // const file = await fs.open(path, 'w')
   const start = performance.now()
-  console.time('Download with Nodejs File API')
+  console.time('Download with Nodejs Uint8Array')
   const fileSize = task.info.size
   const data = new Uint8Array(fileSize)
   await task.startWithPusher({
     push: async (offset, buf) => {
       data.set(buf, offset)
-      // await file.write(data, { position: offset })
     },
   })
-  // await file.close()
   const end = performance.now()
-  console.timeEnd('Download with Nodejs File API')
+  console.timeEnd('Download with Nodejs Uint8Array')
   const speed = task.info.size / ((end - start) / 1000)
   console.log(`Download speed: ${formatSize(speed)}/s`)
-  // const hash = await sha256File(path)
   const hash = sha256(Uint8Array.from(data))
   console.log('File sha256:', hash)
   t.is(hash, 'c0ee0dab0a181c1d6e3d290a81ae9bc41c329ecaa00816ca7d62a685aeb8d972')
