@@ -9,7 +9,8 @@ version = "0.1.0"
 crate-type = ["cdylib"]
 
 [dependencies]
-fast-down-ffi = "0.1.7"
+bytes = "1.11.1"
+fast-down-ffi = { path = "../ffi" }
 napi = { version = "3.8.3", features = ["tokio_rt"] }
 napi-derive = "3.5.2"
 parking_lot = "0.12.5"

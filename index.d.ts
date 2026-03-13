@@ -11,11 +11,23 @@ export declare class DownloadTask {
   isCancelled(): boolean
   get info(): UrlInfo
   /**
-   * 开始下载任务
+   * 开始下载任务写入到指定路径
    * @param `save_path` 存储路径
    * @param `callback` 进度与事件回调函数
    */
   start(savePath: string, callback?: (event: Event) => void): Promise<void>
+  /**
+   * 开始下载任务并返回内存中的数据
+   * @param `callback` 进度与事件回调函数
+   */
+  startInMemory(callback?: (event: Event) => void): Promise<Uint8Array>
+  /**
+   * 开始下载任务并使用自定义的 pusher
+   * @param `push_fn` 数据推送回调函数
+   * @param `flush_fn` 缓冲区刷新回调函数
+   * @param `callback` 进度与事件回调函数
+   */
+  startWithPusher(pushFn: (data: [number, Uint8Array]) => Promise<void>, flushFn?: () => Promise<void>, callback?: (event: Event) => void): Promise<void>
 }
 
 export declare class UrlInfo {
