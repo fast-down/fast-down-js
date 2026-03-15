@@ -93,7 +93,7 @@ impl DownloadTask {
     #[napi(ts_arg_type = "(event: Event) => void")] callback: Option<DownloadCallback>,
   ) -> napi::Result<()> {
     let (task, rx) = self.inner()?;
-    let pusher = JsPusher { push_fn, flush_fn };
+    let pusher = JsPusher::new(push_fn, flush_fn, task.config.write_buffer_size);
     let download_fut = task.start_with_pusher(BoxPusher::new(pusher), self.token.clone());
     download_inner(download_fut, rx, callback)
       .force_send()

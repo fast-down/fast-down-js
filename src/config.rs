@@ -1,5 +1,5 @@
 use crate::Range;
-use fast_down_ffi::utils::Proxy;
+use fast_down_ffi::Proxy;
 use napi_derive::napi;
 use std::{collections::HashMap, time::Duration};
 

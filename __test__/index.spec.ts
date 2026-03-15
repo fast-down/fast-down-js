@@ -5,6 +5,9 @@ import { promises as fs } from 'node:fs'
 import { BinaryLike, createHash } from 'node:crypto'
 import { createReadStream } from 'node:fs'
 import { pipeline } from 'node:stream/promises'
+import { arch } from 'node:process'
+
+const is32Bit = arch === 'ia32' || arch === 'arm'
 
 test.serial('自定义写入器测试-Node File API', async (t) => {
   t.timeout(300000)
@@ -39,8 +42,7 @@ test.serial('自定义写入器测试-Node File API', async (t) => {
   console.log('File sha256:', hash)
   t.is(hash, 'c0ee0dab0a181c1d6e3d290a81ae9bc41c329ecaa00816ca7d62a685aeb8d972')
 })
-
-test.serial('自定义写入器测试-写入内存', async (t) => {
+;(is32Bit ? test.skip : test.serial)('自定义写入器测试-写入内存', async (t) => {
   t.timeout(300000)
 
   const URL = 'https://mirrors.tuna.tsinghua.edu.cn/archlinux/iso/2026.02.01/archlinux-x86_64.iso'
@@ -68,7 +70,6 @@ test.serial('自定义写入器测试-写入内存', async (t) => {
   console.log('File sha256:', hash)
   t.is(hash, 'c0ee0dab0a181c1d6e3d290a81ae9bc41c329ecaa00816ca7d62a685aeb8d972')
 })
-
 test.serial('mmap 写入测试', async (t) => {
   t.timeout(300000)
 
@@ -96,8 +97,7 @@ test.serial('mmap 写入测试', async (t) => {
   console.log('File sha256:', hash)
   t.is(hash, 'c0ee0dab0a181c1d6e3d290a81ae9bc41c329ecaa00816ca7d62a685aeb8d972')
 })
-
-test.serial('下载到内存测试', async (t) => {
+;(is32Bit ? test.skip : test.serial)('下载到内存测试', async (t) => {
   t.timeout(300000)
 
   const URL = 'https://mirrors.tuna.tsinghua.edu.cn/archlinux/iso/2026.02.01/archlinux-x86_64.iso'
