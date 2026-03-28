@@ -6,8 +6,10 @@ export type Event =
   | { type: 'PullError'; id: number; message: string }
   | { type: 'PullTimeout'; id: number }
   | { type: 'PullProgress'; id: number; range: Range }
-  | { type: 'PushError'; id: number; message: string }
+  | { type: 'Pushing'; id: number; range: Range }
+  | { type: 'PushError'; id: number; message: string; range: Range }
   | { type: 'PushProgress'; id: number; range: Range }
+  | { type: 'Flushing' }
   | { type: 'FlushError'; message: string }
   | { type: 'Finished'; id: number }
 

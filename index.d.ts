@@ -135,7 +135,7 @@ export interface Config {
 
 export interface Event {
   /** 事件类型 */
-  type: 'PrefetchError' | 'Pulling' | 'PullError' | 'PullTimeout' | 'PullProgress' | 'PushError' | 'PushProgress' | 'FlushError' | 'Finished'
+  type: 'PrefetchError' | 'Pulling' | 'PullError' | 'PullTimeout' | 'PullProgress' | 'Pushing' | 'PushError' | 'PushProgress' | 'Flushing' | 'FlushError' | 'Finished'
   /** 关联的线程 ID */
   id?: number
   /** 错误消息或描述 */

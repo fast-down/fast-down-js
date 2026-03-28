@@ -33,10 +33,14 @@ async function main() {
         if (event.range.start === 0) progress = []
         mergeProgress(progress, event.range)
         break
+      case 'Flushing':
+        console.timeEnd('Download')
+        console.time('Flush')
+        break
     }
   })
   printProgress()
-  console.timeEnd('Download')
+  console.timeEnd('Flush')
   clearInterval(intervalId)
 }
 

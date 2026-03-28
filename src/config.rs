@@ -1,7 +1,8 @@
 use crate::Range;
 use fast_down_ffi::Proxy;
 use napi_derive::napi;
-use std::{collections::HashMap, time::Duration};
+use parking_lot::lock_api::Mutex;
+use std::{collections::HashMap, sync::Arc, time::Duration};
 
 #[napi(object)]
 pub struct Config {
@@ -101,11 +102,13 @@ impl Config {
         .unwrap_or_default(),
       max_speculative: self.max_speculative.unwrap_or(3) as usize,
       #[allow(clippy::cast_sign_loss)]
-      downloaded_chunk: self
-        .downloaded_chunk
-        .as_ref()
-        .map(|e| e.iter().map(|p| p.start as u64..p.end as u64).collect())
-        .unwrap_or_default(),
+      downloaded_chunk: Arc::new(Mutex::new(
+        self
+          .downloaded_chunk
+          .as_ref()
+          .map(|e| e.iter().map(|p| p.start as u64..p.end as u64).collect())
+          .unwrap_or_default(),
+      )),
       chunk_window: self.chunk_window.unwrap_or(8 * 1024).into(),
     }
   }

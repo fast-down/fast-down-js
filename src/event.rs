@@ -24,7 +24,7 @@ pub struct Event {
   /// 事件类型
   #[napi(
     js_name = "type",
-    ts_type = "'PrefetchError' | 'Pulling' | 'PullError' | 'PullTimeout' | 'PullProgress' | 'PushError' | 'PushProgress' | 'FlushError' | 'Finished'"
+    ts_type = "'PrefetchError' | 'Pulling' | 'PullError' | 'PullTimeout' | 'PullProgress' | 'Pushing' | 'PushError' | 'PushProgress' | 'Flushing' | 'FlushError' | 'Finished'"
   )]
   pub event_type: String,
   /// 关联的线程 ID
@@ -67,15 +67,24 @@ impl From<fast_down_ffi::Event> for Event {
         event.id = Some(id as u32);
         event.range = Some(range.into());
       }
-      fast_down_ffi::Event::PushError(id, e) => {
+      fast_down_ffi::Event::Pushing(id, range) => {
+        event.event_type.push_str("Pushing");
+        event.id = Some(id as u32);
+        event.range = Some(range.into());
+      }
+      fast_down_ffi::Event::PushError(id, range, e) => {
         event.event_type.push_str("PushError");
         event.id = Some(id as u32);
         event.message = Some(e);
+        event.range = Some(range.into());
       }
       fast_down_ffi::Event::PushProgress(id, range) => {
         event.event_type.push_str("PushProgress");
         event.id = Some(id as u32);
         event.range = Some(range.into());
+      }
+      fast_down_ffi::Event::Flushing => {
+        event.event_type.push_str("Flushing");
       }
       fast_down_ffi::Event::FlushError(e) => {
         event.event_type.push_str("FlushError");
