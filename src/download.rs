@@ -62,7 +62,7 @@ impl DownloadTask {
     self.info.clone()
   }
 
-  fn rx(&self) -> napi::Result<Rx> {
+  fn take_rx(&self) -> napi::Result<Rx> {
     self
       .rx
       .lock()
@@ -70,7 +70,7 @@ impl DownloadTask {
       .convert_err("Download task is running")
   }
 
-  fn child_token(&self) -> CancellationToken {
+  fn refresh_child_token(&self) -> CancellationToken {
     let child_token = self.token.child_token();
     *self.child_token.lock() = child_token.clone();
     child_token
@@ -85,8 +85,8 @@ impl DownloadTask {
     save_path: String,
     #[napi(ts_arg_type = "(event: Event) => void")] callback: Option<DownloadCallback>,
   ) -> napi::Result<()> {
-    let rx = self.rx()?;
-    let child_token = self.child_token();
+    let rx = self.take_rx()?;
+    let child_token = self.refresh_child_token();
     let download_fut = self.task.start(save_path.into(), child_token.clone());
     let (res, rx) = download_inner(download_fut, rx, callback)
       .force_send()
@@ -103,8 +103,8 @@ impl DownloadTask {
     &self,
     #[napi(ts_arg_type = "(event: Event) => void")] callback: Option<DownloadCallback>,
   ) -> napi::Result<Uint8Array> {
-    let rx = self.rx()?;
-    let child_token = self.child_token();
+    let rx = self.take_rx()?;
+    let child_token = self.refresh_child_token();
     let download_fut = self.task.start_in_memory(child_token.clone());
     let (res, rx) = download_inner(download_fut, rx, callback)
       .force_send()
@@ -125,8 +125,8 @@ impl DownloadTask {
     #[napi(ts_arg_type = "() => Promise<void>")] flush_fn: Option<Arc<FlushFn>>,
     #[napi(ts_arg_type = "(event: Event) => void")] callback: Option<DownloadCallback>,
   ) -> napi::Result<()> {
-    let rx = self.rx()?;
-    let child_token = self.child_token();
+    let rx = self.take_rx()?;
+    let child_token = self.refresh_child_token();
     let pusher = JsPusher::new(push_fn, flush_fn, self.task.config.write_buffer_size);
     let download_fut = self
       .task
