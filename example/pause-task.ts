@@ -1,0 +1,29 @@
+import { prefetch } from '../dist/'
+import { join, resolve } from 'node:path'
+import { promises as fs } from 'node:fs'
+
+const URL = 'https://mirrors.tuna.tsinghua.edu.cn/archlinux/iso/2026.02.01/archlinux-x86_64.iso'
+
+async function main() {
+  const task = await prefetch(URL, {
+    proxy: 'no',
+    headers: {
+      'User-Agent':
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0',
+    },
+  })
+  setTimeout(() => {
+    task.pause()
+    console.log('Download paused', task.isCancelled())
+  }, 3000)
+  const filename = task.info.filename()
+  const saveDir = resolve('download')
+  await fs.mkdir(saveDir, { recursive: true })
+  const path = join(saveDir, filename)
+  console.log(path)
+  console.time('Download')
+  await task.start(path)
+  console.timeEnd('Download')
+}
+
+main()

@@ -1,7 +1,7 @@
 use crate::Range;
 use fast_down_ffi::Proxy;
 use napi_derive::napi;
-use parking_lot::lock_api::Mutex;
+use parking_lot::Mutex;
 use std::{collections::HashMap, sync::Arc, time::Duration};
 
 #[napi(object)]

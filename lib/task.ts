@@ -23,11 +23,19 @@ export class DownloadTask {
   get info() {
     return this._rawTask.info
   }
+  /** 彻底取消下载任务，不可恢复 */
   cancel() {
     this._rawTask.cancel()
   }
   isCancelled() {
     return this._rawTask.isCancelled()
+  }
+  /** 暂停下载任务，可恢复 */
+  pause() {
+    this._rawTask.pause()
+  }
+  isPaused() {
+    return this._rawTask.isPaused()
   }
   async start(savePath: string, callback?: (event: Event) => void): Promise<void> {
     if (!callback) return this._rawTask.start(savePath)

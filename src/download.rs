@@ -13,8 +13,10 @@ use tokio_util::sync::CancellationToken;
 #[napi]
 pub struct DownloadTask {
   info: UrlInfo,
-  inner: Mutex<Option<(fast_down_ffi::DownloadTask, Rx)>>,
+  task: fast_down_ffi::DownloadTask,
+  rx: Mutex<Option<Rx>>,
   token: CancellationToken,
+  child_token: Mutex<CancellationToken>,
 }
 
 pub type DownloadCallback = ThreadsafeFunction<Event, (), Event, Status, false>;
@@ -22,12 +24,17 @@ pub type DownloadCallback = ThreadsafeFunction<Event, (), Event, Status, false>;
 #[napi]
 impl DownloadTask {
   pub fn new(task: fast_down_ffi::DownloadTask, rx: Rx, token: CancellationToken) -> Self {
-    let info = (&task.info).into();
-    let inner = Mutex::new(Some((task, rx)));
-    Self { info, inner, token }
+    Self {
+      info: (&task.info).into(),
+      task,
+      rx: Mutex::new(Some(rx)),
+      child_token: Mutex::new(token.child_token()),
+      token,
+    }
   }
 
   #[napi]
+  /// 彻底取消下载任务，不可恢复
   pub fn cancel(&self) {
     self.token.cancel();
   }
@@ -37,17 +44,34 @@ impl DownloadTask {
     self.token.is_cancelled()
   }
 
+  #[napi]
+  /// 暂停下载任务，可恢复
+  pub fn pause(&self) {
+    self.child_token.lock().cancel();
+  }
+
+  #[napi]
+  pub fn is_paused(&self) -> bool {
+    self.child_token.lock().is_cancelled()
+  }
+
   #[napi(getter)]
   pub fn info(&self) -> UrlInfo {
     self.info.clone()
   }
 
-  fn inner(&self) -> napi::Result<(fast_down_ffi::DownloadTask, Rx)> {
+  fn rx(&self) -> napi::Result<Rx> {
     self
-      .inner
+      .rx
       .lock()
       .take()
-      .convert_err("Download task has already been started or is invalid")
+      .convert_err("Download task is running")
+  }
+
+  fn child_token(&self) -> CancellationToken {
+    let child_token = self.token.child_token();
+    *self.child_token.lock() = child_token.clone();
+    child_token
   }
 
   /// 开始下载任务写入到指定路径
@@ -59,11 +83,14 @@ impl DownloadTask {
     save_path: String,
     #[napi(ts_arg_type = "(event: Event) => void")] callback: Option<DownloadCallback>,
   ) -> napi::Result<()> {
-    let (task, rx) = self.inner()?;
-    let download_fut = task.start(save_path.into(), self.token.clone());
-    download_inner(download_fut, rx, callback)
+    let rx = self.rx()?;
+    let child_token = self.child_token();
+    let download_fut = self.task.start(save_path.into(), child_token);
+    let (res, rx) = download_inner(download_fut, rx, callback)
       .force_send()
-      .await
+      .await;
+    *self.rx.lock() = Some(rx);
+    res
   }
 
   /// 开始下载任务并返回内存中的数据
@@ -73,12 +100,14 @@ impl DownloadTask {
     &self,
     #[napi(ts_arg_type = "(event: Event) => void")] callback: Option<DownloadCallback>,
   ) -> napi::Result<Uint8Array> {
-    let (task, rx) = self.inner()?;
-    let download_fut = task.start_in_memory(self.token.clone());
-    download_inner(download_fut, rx, callback)
+    let rx = self.rx()?;
+    let child_token = self.child_token();
+    let download_fut = self.task.start_in_memory(child_token);
+    let (res, rx) = download_inner(download_fut, rx, callback)
       .force_send()
-      .await
-      .map(Uint8Array::new)
+      .await;
+    *self.rx.lock() = Some(rx);
+    res.map(Uint8Array::new)
   }
 
   /// 开始下载任务并使用自定义的 pusher
@@ -92,12 +121,17 @@ impl DownloadTask {
     #[napi(ts_arg_type = "() => Promise<void>")] flush_fn: Option<Arc<FlushFn>>,
     #[napi(ts_arg_type = "(event: Event) => void")] callback: Option<DownloadCallback>,
   ) -> napi::Result<()> {
-    let (task, rx) = self.inner()?;
-    let pusher = JsPusher::new(push_fn, flush_fn, task.config.write_buffer_size);
-    let download_fut = task.start_with_pusher(BoxPusher::new(pusher), self.token.clone());
-    download_inner(download_fut, rx, callback)
+    let rx = self.rx()?;
+    let child_token = self.child_token();
+    let pusher = JsPusher::new(push_fn, flush_fn, self.task.config.write_buffer_size);
+    let download_fut = self
+      .task
+      .start_with_pusher(BoxPusher::new(pusher), child_token);
+    let (res, rx) = download_inner(download_fut, rx, callback)
       .force_send()
-      .await
+      .await;
+    *self.rx.lock() = Some(rx);
+    res
   }
 }
 
@@ -105,26 +139,31 @@ async fn download_inner<R>(
   download_fut: impl Future<Output = Result<R, Error>>,
   rx: Rx,
   callback: Option<DownloadCallback>,
-) -> napi::Result<R> {
-  let Some(callback) = callback else {
-    return download_fut.await.convert_err("Download Task Error");
-  };
+) -> (napi::Result<R>, Rx) {
   tokio::pin!(download_fut);
-  loop {
+  let res = loop {
     tokio::select! {
-      res = &mut download_fut => return res.convert_err("Download Task Error"),
+      res = &mut download_fut => break res,
       event = rx.recv() => {
         match event {
           Ok(e) => {
-            callback.call(
-              Event::from(e),
-              ThreadsafeFunctionCallMode::NonBlocking,
-            );
+            if let Some(ref cb) = callback {
+              cb.call(
+                Event::from(e),
+                ThreadsafeFunctionCallMode::NonBlocking,
+              );
+            }
           }
-          Err(_) => break,
+          Err(_) => break download_fut.await,
         }
       }
     }
+  };
+  while let Ok(e) = rx.try_recv() {
+    if let Some(ref cb) = callback {
+      cb.call(Event::from(e), ThreadsafeFunctionCallMode::NonBlocking);
+    }
   }
-  download_fut.await.convert_err("Download Task Error")
+  let res = res.convert_err("Download task failed");
+  (res, rx)
 }

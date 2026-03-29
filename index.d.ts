@@ -7,8 +7,12 @@ export declare class CancellationToken {
 }
 
 export declare class DownloadTask {
+  /** 彻底取消下载任务，不可恢复 */
   cancel(): void
   isCancelled(): boolean
+  /** 暂停下载任务，可恢复 */
+  pause(): void
+  isPaused(): boolean
   get info(): UrlInfo
   /**
    * 开始下载任务写入到指定路径
