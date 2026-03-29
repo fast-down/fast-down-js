@@ -50,14 +50,25 @@ test.serial('mmap 写入测试-有中断', async (t) => {
 
   console.log('Starting first part (will cancel)...')
   setTimeout(() => {
+    t.assert(!task.isCancelled())
+    t.assert(!task.isPaused())
     task.pause()
+    t.assert(!task.isCancelled())
+    t.assert(task.isPaused())
   }, 2000)
 
   const start = performance.now()
+  t.assert(!task.isCancelled())
+  t.assert(task.isPaused())
   await task.start(path)
   console.log('Task cancelled successfully')
   console.log('Resuming download...')
   await task.start(path)
+  t.assert(!task.isCancelled())
+  t.assert(task.isPaused())
+  task.cancel()
+  t.assert(task.isCancelled())
+  t.assert(task.isPaused())
 
   const end = performance.now()
   const speed = task.info.size / ((end - start) / 1000)

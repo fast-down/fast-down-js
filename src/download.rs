@@ -24,11 +24,13 @@ pub type DownloadCallback = ThreadsafeFunction<Event, (), Event, Status, false>;
 #[napi]
 impl DownloadTask {
   pub fn new(task: fast_down_ffi::DownloadTask, rx: Rx, token: CancellationToken) -> Self {
+    let child_token = token.child_token();
+    child_token.cancel();
     Self {
       info: (&task.info).into(),
       task,
       rx: Mutex::new(Some(rx)),
-      child_token: Mutex::new(token.child_token()),
+      child_token: Mutex::new(child_token),
       token,
     }
   }
@@ -85,11 +87,12 @@ impl DownloadTask {
   ) -> napi::Result<()> {
     let rx = self.rx()?;
     let child_token = self.child_token();
-    let download_fut = self.task.start(save_path.into(), child_token);
+    let download_fut = self.task.start(save_path.into(), child_token.clone());
     let (res, rx) = download_inner(download_fut, rx, callback)
       .force_send()
       .await;
     *self.rx.lock() = Some(rx);
+    child_token.cancel();
     res
   }
 
@@ -102,11 +105,12 @@ impl DownloadTask {
   ) -> napi::Result<Uint8Array> {
     let rx = self.rx()?;
     let child_token = self.child_token();
-    let download_fut = self.task.start_in_memory(child_token);
+    let download_fut = self.task.start_in_memory(child_token.clone());
     let (res, rx) = download_inner(download_fut, rx, callback)
       .force_send()
       .await;
     *self.rx.lock() = Some(rx);
+    child_token.cancel();
     res.map(Uint8Array::new)
   }
 
@@ -126,11 +130,12 @@ impl DownloadTask {
     let pusher = JsPusher::new(push_fn, flush_fn, self.task.config.write_buffer_size);
     let download_fut = self
       .task
-      .start_with_pusher(BoxPusher::new(pusher), child_token);
+      .start_with_pusher(BoxPusher::new(pusher), child_token.clone());
     let (res, rx) = download_inner(download_fut, rx, callback)
       .force_send()
       .await;
     *self.rx.lock() = Some(rx);
+    child_token.cancel();
     res
   }
 }
