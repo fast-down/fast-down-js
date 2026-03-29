@@ -12,7 +12,7 @@ pub async fn prefetch(
 ) -> napi::Result<DownloadTask> {
   let url: Url = url.parse().convert_err("Invalid URL")?;
   let config = config.map(|c| c.to_ffi_config()).unwrap_or_default();
-  let token = token.map(CancellationToken::get_token).unwrap_or_default();
+  let token = token.map(|t| t.token.clone()).unwrap_or_default();
   let (tx, rx) = create_channel();
   let task = tokio::select! {
     () = token.cancelled() => Err(napi::Error::new(napi::Status::Cancelled, "Prefetch Cancelled"))?,

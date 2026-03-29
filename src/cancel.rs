@@ -3,7 +3,7 @@ use napi_derive::napi;
 #[derive(Debug, Default, Clone)]
 #[napi]
 pub struct CancellationToken {
-  token: tokio_util::sync::CancellationToken,
+  pub(crate) token: tokio_util::sync::CancellationToken,
 }
 
 #[napi]
@@ -24,10 +24,5 @@ impl CancellationToken {
   #[must_use]
   pub fn is_cancelled(&self) -> bool {
     self.token.is_cancelled()
-  }
-
-  #[must_use]
-  pub fn get_token(&self) -> tokio_util::sync::CancellationToken {
-    self.token.clone()
   }
 }
