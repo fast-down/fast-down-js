@@ -50,8 +50,14 @@ export class DownloadTask {
   }
   async startWithPusher(pusher: Pusher, callback?: (event: Event) => void): Promise<void> {
     return this._rawTask.startWithPusher(
-      async (args) => await pusher.push(args[0], args[1]),
-      pusher.flush,
+      (args) =>
+        new Promise((resolve, reject) => setImmediate(() => pusher.push(args[0], args[1]).then(resolve).catch(reject))),
+      pusher.flush
+        ? () =>
+            new Promise((resolve, reject) => {
+              setImmediate(() => pusher.flush!().then(resolve).catch(reject))
+            })
+        : undefined,
       (rawEvent) => {
         callback?.(rawEvent as unknown as Event)
       },
