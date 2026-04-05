@@ -39,28 +39,16 @@ export class DownloadTask {
   }
   async start(savePath: string, callback?: (event: Event) => void): Promise<void> {
     if (!callback) return this._rawTask.start(savePath)
-    return this._rawTask.start(savePath, (rawEvent) => {
-      callback(rawEvent as unknown as Event)
-    })
+    return this._rawTask.start(savePath, (rawEvent) => callback(rawEvent as unknown as Event))
   }
   async startInMemory(callback?: (event: Event) => void): Promise<Uint8Array> {
-    return this._rawTask.startInMemory((rawEvent) => {
-      callback?.(rawEvent as unknown as Event)
-    })
+    return this._rawTask.startInMemory((rawEvent) => callback?.(rawEvent as unknown as Event))
   }
   async startWithPusher(pusher: Pusher, callback?: (event: Event) => void): Promise<void> {
     return this._rawTask.startWithPusher(
-      (args) =>
-        new Promise((resolve, reject) => setImmediate(() => pusher.push(args[0], args[1]).then(resolve).catch(reject))),
-      pusher.flush
-        ? () =>
-            new Promise((resolve, reject) => {
-              setImmediate(() => pusher.flush!().then(resolve).catch(reject))
-            })
-        : undefined,
-      (rawEvent) => {
-        callback?.(rawEvent as unknown as Event)
-      },
+      async (args) => pusher.push(args[0], args[1]),
+      pusher.flush,
+      (rawEvent) => callback?.(rawEvent as unknown as Event),
     )
   }
 }
