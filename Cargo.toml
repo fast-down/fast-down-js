@@ -10,7 +10,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 bytes = "1.11.1"
-fast-down-ffi = { version = "0.2.4", features = ["file", "mem", "reqwest-tls"] }
+fast-down-ffi = { version = "0.2.5", features = ["file", "mem", "reqwest-tls"] }
 napi = { version = "3.8.4", features = ["tokio_rt"] }
 napi-derive = "3.5.3"
 parking_lot = "0.12.5"
