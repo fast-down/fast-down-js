@@ -7,7 +7,7 @@ use napi::{
 };
 use napi_derive::napi;
 use parking_lot::Mutex;
-use std::{future::Future, sync::Arc};
+use std::future::Future;
 use tokio_util::sync::CancellationToken;
 
 #[napi]
@@ -121,8 +121,8 @@ impl DownloadTask {
   #[napi]
   pub async fn start_with_pusher(
     &self,
-    #[napi(ts_arg_type = "(data: [number, Uint8Array]) => Promise<void>")] push_fn: Arc<PushFn>,
-    #[napi(ts_arg_type = "() => Promise<void>")] flush_fn: Option<Arc<FlushFn>>,
+    #[napi(ts_arg_type = "(data: [number, Uint8Array]) => Promise<void>")] push_fn: PushFn,
+    #[napi(ts_arg_type = "() => Promise<void>")] flush_fn: Option<FlushFn>,
     #[napi(ts_arg_type = "(event: Event) => void")] callback: Option<DownloadCallback>,
   ) -> napi::Result<()> {
     let rx = self.take_rx()?;
