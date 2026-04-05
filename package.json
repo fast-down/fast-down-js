@@ -62,7 +62,7 @@
     "format:rs": "cargo fmt",
     "lint": "oxlint .",
     "prepublishOnly": "yarn build:ts && napi prepublish -t npm",
-    "test": "ava",
+    "test": "ava --node-arguments=\"--expose-gc\"",
     "preversion": "yarn build && yarn build:ts && git add .",
     "version": "napi version",
     "prepare": "husky"

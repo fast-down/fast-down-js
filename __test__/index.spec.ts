@@ -40,6 +40,13 @@ function sha256(data: BinaryLike) {
 test.before(async () => {
   await fs.mkdir(SAVE_DIR, { recursive: true })
 })
+test.afterEach(() => {
+  if (typeof global.gc === 'function') {
+    console.time('垃圾回收')
+    global.gc()
+    console.timeEnd('垃圾回收')
+  }
+})
 
 test.serial('mmap 写入测试-有中断', async (t) => {
   t.timeout(300000)
