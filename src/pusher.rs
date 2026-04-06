@@ -1,6 +1,4 @@
-use crate::ToNapiError;
 use bytes::{Bytes, BytesMut};
-use crossfire::{oneshot, spsc, Tx};
 use fast_down_ffi::ProgressEntry;
 use napi::{
   bindgen_prelude::{Promise, Uint8Array},
@@ -14,62 +12,40 @@ pub type PushFn =
 pub type FlushFn = ThreadsafeFunction<(), Promise<()>, (), Status, false>;
 
 pub struct JsPusher {
+  pub push_fn: PushFn,
+  pub flush_fn: Option<FlushFn>,
   pub cache: BTreeMap<u64, Bytes>,
   pub cache_size: usize,
   pub buffer_size: usize,
-  pub tx: Tx<spsc::Array<(Action, oneshot::TxOneshot<napi::Result<()>>)>>,
-}
-
-pub enum Action {
-  Push(i64, Bytes),
-  Flush,
 }
 
 impl JsPusher {
   #[must_use]
-  pub fn new(push_fn: PushFn, flush_fn: Option<FlushFn>, buffer_size: usize) -> Self {
-    let (tx, rx) =
-      spsc::bounded_blocking_async::<(Action, oneshot::TxOneshot<napi::Result<()>>)>(1);
-    tokio::spawn(async move {
-      while let Ok((action, tx)) = rx.recv().await {
-        let res = match action {
-          Action::Push(offset, data) => {
-            match push_fn.call_async((offset, Uint8Array::from(data))).await {
-              Ok(promise) => promise.await.map_err(|e| e.to_string()),
-              Err(e) => Err(e.to_string()),
-            }
-          }
-          Action::Flush => match &flush_fn {
-            Some(flush_fn) => match flush_fn.call_async(()).await {
-              Ok(promise) => promise.await.map_err(|e| e.to_string()),
-              Err(e) => Err(e.to_string()),
-            },
-            None => Ok(()),
-          },
-        };
-        tx.send(res.convert_err("JsPusher Error"));
-      }
-    });
+  pub const fn new(push_fn: PushFn, flush_fn: Option<FlushFn>, buffer_size: usize) -> Self {
     Self {
+      push_fn,
+      flush_fn,
       cache: BTreeMap::new(),
       cache_size: 0,
       buffer_size,
-      tx,
     }
   }
 
-  fn send_to_js(&self, offset: u64, content: Bytes) -> napi::Result<()> {
-    let (tx, rx) = oneshot::oneshot();
+  fn send_to_js(&self, start: u64, content: Bytes) -> Result<(), String> {
     #[allow(clippy::cast_possible_wrap)]
-    self
-      .tx
-      .send((Action::Push(offset as i64, content), tx))
-      .convert_err("JsPusher Error")?;
-    rx.recv().convert_err("JsPusher Error").flatten()
+    let start_i64 = start as i64;
+    let data = Uint8Array::from(content);
+    tokio::runtime::Handle::current().block_on(async move {
+      let res = self.push_fn.call_async((start_i64, data)).await;
+      match res {
+        Ok(promise) => promise.await.map_err(|e| e.to_string()),
+        Err(e) => Err(e.to_string()),
+      }
+    })
   }
 
   /// 内部 flush：取出 `cache` 中的小块，合并连续的小块，然后调用 `send_to_js`
-  fn flush_buffer(&mut self) -> napi::Result<()> {
+  fn flush_buffer(&mut self) -> Result<(), String> {
     let mut curr_start: Option<u64> = None;
     let mut curr_end: u64 = 0;
     let mut buf = BytesMut::new();
@@ -114,7 +90,7 @@ impl JsPusher {
 }
 
 impl fast_down_ffi::Pusher for JsPusher {
-  type Error = napi::Error;
+  type Error = String;
 
   fn push(&mut self, range: &ProgressEntry, content: Bytes) -> Result<(), (Self::Error, Bytes)> {
     let start = range.start;
@@ -124,23 +100,29 @@ impl fast_down_ffi::Pusher for JsPusher {
       Some(old) => self.cache_size -= old.len(),
       None => {}
     }
-    self.cache.insert(start, content.clone());
+    self.cache.insert(start, content);
     self.cache_size += new_len;
     if self.cache_size >= self.buffer_size {
-      if let Err(e) = self.flush_buffer() {
-        return Err((e, content));
-      }
+      self.flush_buffer().map_err(|e| {
+        let failed_bytes = self.cache.remove(&range.start).unwrap_or_default();
+        self.cache_size -= failed_bytes.len();
+        (e, failed_bytes)
+      })?;
     }
     Ok(())
   }
 
   fn flush(&mut self) -> Result<(), Self::Error> {
     self.flush_buffer()?;
-    let (tx, rx) = oneshot::oneshot();
-    self
-      .tx
-      .send((Action::Flush, tx))
-      .convert_err("JsPusher Error")?;
-    rx.recv().convert_err("JsPusher Error").flatten()
+    if let Some(flush_fn) = &self.flush_fn {
+      tokio::runtime::Handle::current().block_on(async move {
+        let res = flush_fn.call_async(()).await;
+        match res {
+          Ok(promise) => promise.await.map_err(|e| e.to_string()),
+          Err(e) => Err(e.to_string()),
+        }
+      })?;
+    }
+    Ok(())
   }
 }
